@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BORTAN 2 | Infinite AI Creators</title>
+
+<style>
+:root{
+  --bg:#06142d;
+  --panel:rgba(7,24,53,.84);
+  --line:rgba(110,180,255,.22);
+  --text:#eaf4ff;
+  --muted:#9ab2d7;
+  --blue:#58d9ff;
+  --brain:#56caff;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:radial-gradient(ellipse at 50% 20%,#15396b 0%,#091c3b 45%,#041027 100%);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+  min-height:100vh;
+}
+
+button,input,textarea{font:inherit}
+button{cursor:pointer;color:inherit}
+
+/* INTRO SCREENS */
+
+.intro{
+  position:fixed;
+  inset:0;
+  z-index:1000;
+  background:#020307;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  opacity:1;
+  visibility:visible;
+  transition:opacity .8s ease,visibility .8s ease;
+}
+
+.intro.hide{
+  opacity:0;
+  visibility:hidden;
+  pointer-events:none;
+}
+
+.gold{
+  font-family:Georgia,serif;
+  font-size:clamp(25px,5vw,54px);
+  font-weight:bold;
+  letter-spacing:2px;
+  line-height:1.5;
+  background:linear-gradient(
+    110deg,
+    #6e4b08,
+    #fff1a8 20%,
+    #bd8a20 38%,
+    #fff8c9 50%,
+    #a87812 70%,
+    #fff0a0 90%
+  );
+  background-size:250% auto;
+  color:transparent;
+  background-clip:text;
+  -webkit-background-clip:text;
+  animation:shine 2.4s linear infinite;
+  text-shadow:0 0 22px #b88b2a55;
+}
+
+@keyframes shine{
+  to{background-position:250% center}
+}
+
+.intro small{
+  display:block;
+  color:#c7a85d;
+  letter-spacing:5px;
+  margin-top:20px;
+}
+
+.typeLine{
+  display:block;
+  min-height:1.5em;
+}
+
+/* MAIN APP */
+
+.app{
+  display:none;
+  min-height:100vh;
+  width:100%;
+}
+
+.app.ready{
+  display:flex;
+}
+
+.sidebar{
+  width:108px;
+  padding:18px 12px;
+  background:#030c1de8;
+  border-right:1px solid var(--line);
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  align-items:stretch;
+}
+
+.logo{
+  height:66px;
+  border-radius:18px;
+  display:grid;
+  place-items:center;
+  font-size:32px;
+  font-weight:900;
+  background:linear-gradient(135deg,#47d5ff,#7c78ff,#d86bdf);
+  box-shadow:0 0 25px #418cff44;
+  margin-bottom:14px;
+}
+
+.nav{
+  padding:14px 5px;
+  border:1px solid var(--line);
+  background:#0b2040;
+  border-radius:15px;
+  color:#c9dcfa;
+  font-size:10px;
+  letter-spacing:1px;
+}
+
+.nav span{
+  display:block;
+  font-size:25px;
+  margin-bottom:8px;
+}
+
+.nav.active,.nav:hover{
+  background:#153d70;
+  border-color:#56caff;
+  box-shadow:0 0 20px #338bff30;
+}
+
+.nav.bottom{margin-top:auto}
+
+.main{
+  flex:1;
+  min-width:0;
+  padding:22px 28px;
+}
+
+.header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid var(--line);
+  padding:0 0 18px;
+}
+
+.brand h1{
+  margin:0;
+  font-size:clamp(22px,3vw,34px);
+  letter-spacing:8px;
+  background:linear-gradient(90deg,#fff,#b5d8ff,#9c8aff);
+  color:transparent;
+  background-clip:text;
+}
+
+.brand p{
+  font-size:9px;
+  letter-spacing:2px;
+  color:var(--muted);
+  margin:8px 0 0;
+}
+
+.pill{
+  border:1px solid #36d6b66b;
+  color:#8fffe0;
+  border-radius:25px;
+  padding:10px 14px;
+  font-size:10px;
+  letter-spacing:1px;
+}
+
+.tab{display:none}
+.tab.active{display:block}
+
+.panel{
+  margin-top:20px;
+  min-height:calc(100vh - 130px);
+  border:1px solid var(--line);
+  border-radius:24px;
+  padding:24px;
+  background:linear-gradient(145deg,#0b2046c9,#04122be8);
+  box-shadow:0 20px 60px #0003;
+}
+
+.title{
+  text-align:center;
+  margin:0 0 14px;
+}
+
+.title h2{
+  font-size:20px;
+  letter-spacing:5px;
+  margin:0;
+}
+
+.title p{
+  font-size:10px;
+  color:var(--muted);
+  letter-spacing:2px;
+}
+
+.chatMessages{
+  height:min(55vh,530px);
+  min-height:300px;
+  overflow:auto;
+  padding:10px 4px;
+}
+
+.message{
+  max-width:78%;
+  padding:14px 18px;
+  margin:12px 0;
+  border-radius:18px;
+  line-height:1.55;
+  overflow-wrap:anywhere;
+  white-space:pre-wrap;
+}
+
+.userMessage{
+  margin-left:auto;
+  background:linear-gradient(135deg,#167fcb,#665de1);
+  border-bottom-right-radius:4px;
+}
+
+.bortanMessage{
+  background:#12305a;
+  border:1px solid #6eb8ff3c;
+  border-bottom-left-radius:4px;
+}
+
+.composer{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  background:#061a38;
+  border:1px solid #4c9be85e;
+  border-radius:18px;
+  padding:9px;
+}
+
+.composer input{
+  flex:1;
+  min-width:0;
+  background:transparent;
+  border:0;
+  outline:0;
+  color:white;
+  padding:12px;
+  font-size:15px;
+}
+
+.iconBtn,.send{
+  border:1px solid #477dbb66;
+  border-radius:13px;
+  background:#112d55;
+  padding:12px 15px;
+}
+
+.send{
+  background:linear-gradient(135deg,#2bbde9,#655ee6);
+  font-weight:bold;
+  border:0;
+}
+
+.hint{
+  font-size:11px;
+  color:var(--muted);
+  margin:12px 5px;
+}
+
+/* VIRTUAL BRAIN */
+
+.brainArea{
+  height:390px;
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+}
+
+.brainGlow{
+  position:absolute;
+  inset:0;
+  background:radial-gradient(ellipse at center,var(--brain) 0%,transparent 58%);
+  opacity:.13;
+  filter:blur(35px);
+}
+
+.waveSvg{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  overflow:visible;
+}
+
+.wavePath{
+  fill:none;
+  stroke:var(--brain);
+  stroke-width:5;
+  stroke-linecap:round;
+  filter:drop-shadow(0 0 6px var(--brain))
+         drop-shadow(0 0 20px var(--brain));
+  opacity:.9;
+  transition:stroke .6s,filter .6s;
+}
+
+.core{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:142px;
+  height:142px;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  z-index:4;
+  background:radial-gradient(
+    circle at 30% 25%,
+    #e3fbff,
+    #64c9ff 28%,
+    #3e5bd9 65%,
+    #191e68
+  );
+  border:2px solid #d8f8ff;
+  box-shadow:0 0 22px var(--brain),
+             0 0 65px var(--brain),
+             inset 0 0 25px #fff8;
+  animation:pulse 3s ease-in-out infinite alternate;
+}
+
+.core b{
+  font-size:17px;
+  letter-spacing:2px;
+  text-shadow:0 2px 10px #001;
+}
+
+.core small{
+  display:block;
+  font-size:10px;
+  letter-spacing:4px;
+  margin-top:6px;
+}
+
+@keyframes pulse{
+  to{
+    box-shadow:0 0 35px var(--brain),
+               0 0 90px var(--brain),
+               inset 0 0 35px #fff9;
+    scale:1.04;
+  }
+}
+
+.energy{
+  fill:#fff;
+  filter:drop-shadow(0 0 8px white)
+         drop-shadow(0 0 18px var(--brain));
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-top:12px;
+}
+
+.stat{
+  background:#071a36;
+  border:1px solid var(--line);
+  border-radius:15px;
+  padding:16px;
+}
+
+.statTop{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  font-size:10px;
+  letter-spacing:.7px;
+  color:#c4d9f8;
+}
+
+.percent{
+  color:var(--blue);
+  font-weight:bold;
+}
+
+.bar{
+  height:7px;
+  background:#ffffff12;
+  border-radius:10px;
+  margin-top:12px;
+  overflow:hidden;
+}
+
+.fill{
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,#43d6ff,#8b7bff,#e36fd1);
+  transition:width 1s;
+}
+
+.status{
+  margin-top:16px;
+  text-align:center;
+  padding:15px;
+  border:1px solid var(--line);
+  background:#061832;
+  border-radius:14px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.6;
+}
+
+.status strong{color:var(--blue)}
+
+/* SETTINGS AND LIBRARY */
+
+.settingsGrid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px;
+}
+
+.settingCard{
+  padding:18px;
+  border:1px solid var(--line);
+  background:#081b39;
+  border-radius:16px;
+}
+
+.settingCard h3{margin-top:0}
+
+.settingCard p{
+  color:var(--muted);
+  font-size:13px;
+  line-height:1.5;
+}
+
+.settingCard input,.settingCard textarea{
+  width:100%;
+  padding:11px;
+  border-radius:10px;
+  border:1px solid var(--line);
+  background:#041127;
+  color:white;
+  margin:6px 0;
+}
+
+.libraryList{
+  color:var(--muted);
+  font-size:13px;
+  white-space:pre-line;
+}
+
+.filePick{display:none}
+.notice{font-size:11px;color:#9ab2d7}
+.mobileMenu{display:none}
+
+/* MOBILE */
+
+@media(max-width:850px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .main{padding:15px}
+  .sidebar{width:80px;padding:12px 7px}
+  .nav{font-size:0}
+  .nav span{font-size:23px;margin:0}
+  .brand p,.pill{display:none}
+  .panel{padding:15px}
+  .brainArea{height:310px}
+  .core{width:108px;height:108px}
+  .message{max-width:95%}
+}
+
+@media(max-width:520px){
+  .stats{grid-template-columns:1fr}
+  .composer{gap:5px;padding:5px}
+  .iconBtn{padding:10px}
+  .send{padding:11px}
+  .header{gap:8px}
+  .brand h1{letter-spacing:4px}
+}
+</style>
+</head>
+
+<body>
+
+<!-- SCREEN 1: COMPANY INTRO -->
+<!-- FIXED: no "hide" class; visible immediately -->
+
+<div id="intro1" class="intro" style="display:grid;">
+  <div>
+    <div class="gold">
+      <span id="intro1Line1" class="typeLine"></span>
+      <span id="intro1Line2" class="typeLine"></span>
+    </div>
+    <small>INFINITE INNOVATION</small>
+  </div>
+</div>
+
+<!-- SCREEN 2: AI DIVISION INTRO -->
+<!-- Starts hidden, but does NOT have the hide class -->
+
+<div id="intro2" class="intro" style="display:none;">
+  <div>
+    <div class="gold">
+      <span id="intro2Line1" class="typeLine"></span>
+      <span id="intro2Line2" class="typeLine"></span>
+    </div>
+    <small>INTRODUCING BORTAN 2</small>
+  </div>
+</div>
+
+<!-- SCREEN 3: MAIN APP -->
+<!-- FIXED: remove "ready" so the app cannot flash early -->
+
+<div class="app" id="app">
+
+<aside class="sidebar">
+  <div class="logo">B</div>
+
+  <button class="nav active" onclick="openTab('chat',this)">
+    <span>💬</span>CHAT
+  </button>
+
+  <button class="nav" onclick="openTab('brain',this)">
+    <span>🧠</span>BRAIN
+  </button>
+
+  <button class="nav" onclick="openTab('live',this)">
+    <span>⚡</span>LIVE
+  </button>
+
+  <button class="nav" onclick="openTab('library',this)">
+    <span>▤</span>LIBRARY
+  </button>
+
+  <button class="nav bottom" onclick="openTab('settings',this)">
+    <span>⚙</span>SETTINGS
+  </button>
+</aside>
+
+<main class="main">
+
+<header class="header">
+  <div class="brand">
+    <h1>BORTAN 2</h1>
+    <p>BRAIN-OPTIMIZED RAGED TERABYTE ALGORITHMIC-ANALYTIC NEUTRAL-NODE</p>
+  </div>
+  <div class="pill">● LOCAL DEMO</div>
+</header>
+
+<!-- CHAT -->
+
+<section id="chat" class="tab active">
+<div class="panel">
+
+  <div class="title">
+    <h2>BORTAN AI CHAT</h2>
+    <p>ASK • THINK • EXPLORE</p>
+  </div>
+
+  <div class="chatMessages" id="chatMessages">
+    <div class="message bortanMessage">
+      <b>BORTAN 2 🧠</b><br><br>
+      Hello! I am BORTAN 2, created by Infinite AI Creators.
+      <br><br>
+      This is the local interface demo. Connect the actual AI backend to enable real model responses, accounts, and persistent memory.
+    </div>
+  </div>
+
+  <div class="composer">
+    <button class="iconBtn" title="Attach files"
+      onclick="document.getElementById('fileInput').click()">＋</button>
+
+    <input id="chatInput"
+      placeholder="Ask BORTAN anything..."
+      onkeydown="if(event.key==='Enter')askFromChat()">
+
+    <button class="iconBtn" title="Voice input"
+      onclick="startVoice('chatInput')">🎙</button>
+
+    <button class="send" onclick="askFromChat()">SEND ➤</button>
+  </div>
+
+  <input class="filePick" id="fileInput" type="file" multiple
+    onchange="showFiles(this)">
+
+  <div class="hint" id="fileHint">
+    ＋ Attachments are selected locally for this demo; upload storage will be connected in the backend phase.
+  </div>
+
+</div>
+</section>
+
+<!-- BRAIN -->
+
+<section id="brain" class="tab">
+<div class="panel">
+
+  <div class="title">
+    <h2>BORTAN VIRTUAL BRAIN</h2>
+    <p>QUESTION → WAVES → ESTIMATED DIFFICULTY</p>
+  </div>
+
+  <div class="brainArea">
+    <div class="brainGlow"></div>
+
+    <svg class="waveSvg" viewBox="0 0 1000 400" preserveAspectRatio="none">
+      <path id="brainWave1" class="wavePath"
+        d="M0 200 C90 200 90 80 180 100 S270 320 360 200 S450 80 500 200 S590 320 680 200 S770 80 860 100 S930 200 1000 200"></path>
+
+      <path id="brainWave2" class="wavePath"
+        d="M0 200 C90 200 90 320 180 300 S270 80 360 200 S450 320 500 200 S590 80 680 200 S770 320 860 300 S930 200 1000 200"></path>
+
+      <circle id="brainEnergy" class="energy" r="8" cx="0" cy="200"></circle>
+    </svg>
+
+    <div class="core">
+      <div>
+        <b>BORTAN</b>
+        <small>CORE</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="stats">
+
+    <div class="stat">
+      <div class="statTop">
+        <span>UNDERSTANDING</span>
+        <span class="percent" id="understandingPct">0%</span>
+      </div>
+      <div class="bar"><div class="fill" id="understandingBar"></div></div>
+    </div>
+
+    <div class="stat">
+      <div class="statTop">
+        <span>REASONING</span>
+        <span class="percent" id="reasoningPct">0%</span>
+      </div>
+      <div class="bar"><div class="fill" id="reasoningBar"></div></div>
+    </div>
+
+    <div class="stat">
+      <div class="statTop">
+        <span>SEARCHING KNOWLEDGE</span>
+        <span class="percent" id="knowledgePct">0%</span>
+      </div>
+      <div class="bar"><div class="fill" id="knowledgeBar"></div></div>
+    </div>
+
+    <div class="stat">
+      <div class="statTop">
+        <span>ANSWER CREATION</span>
+        <span class="percent" id="answerPct">0%</span>
+      </div>
+      <div class="bar"><div class="fill" id="answerBar"></div></div>
+    </div>
+
+  </div>
+
+  <div class="status" id="brainStatus">
+    <strong>READY</strong><br>
+    Waiting for your question. Difficulty is a basic local estimate, not an AI model measurement.
+  </div>
+
+</div>
+</section>
+
+<!-- LIVE -->
+
+<section id="live" class="tab">
+<div class="panel">
+
+  <div class="title">
+    <h2>LIVE BRAIN MODE</h2>
+    <p>CHAT HISTORY + LIVE BRAIN ACTIVITY</p>
+  </div>
+
+  <div class="brainArea">
+    <div class="brainGlow"></div>
+
+    <svg class="waveSvg" viewBox="0 0 1000 400" preserveAspectRatio="none">
+      <path class="wavePath"
+        d="M0 200 C90 200 90 80 180 100 S270 320 360 200 S450 80 500 200 S590 320 680 200 S770 80 860 100 S930 200 1000 200"></path>
+
+      <path class="wavePath"
+        d="M0 200 C90 200 90 320 180 300 S270 80 360 200 S450 320 500 200 S590 80 680 200 S770 320 860 300 S930 200 1000 200"></path>
+
+      <circle id="liveEnergy" class="energy" r="8" cx="0" cy="200"></circle>
+    </svg>
+
+    <div class="core">
+      <div>
+        <b>BORTAN</b>
+        <small>CORE</small>
+      </div>
+    </div>
+  </div>
+
+  <div class="composer">
+    <input id="liveInput"
+      placeholder="Ask in live mode..."
+      onkeydown="if(event.key==='Enter')askFromLive()">
+
+    <button class="iconBtn" onclick="startVoice('liveInput')">🎙</button>
+
+    <button class="send" onclick="askFromLive()">ANALYSE ➤</button>
+  </div>
+
+  <div class="chatMessages" id="liveMessages"
+    style="height:180px;min-height:100px"></div>
+
+  <div class="status" id="liveStatus">
+    <strong>LIVE MODE READY</strong><br>
+    Waiting for your question.
+  </div>
+
+</div>
+</section>
+
+<!-- LIBRARY -->
+
+<section id="library" class="tab">
+<div class="panel">
+
+  <div class="title">
+    <h2>MY LIBRARY</h2>
+    <p>YOUR FILES • YOUR WORKSPACE</p>
+  </div>
+
+  <div class="settingCard">
+    <h3>Upload to local demo</h3>
+
+    <p>
+      Choose files to preview them in this session. Permanent private storage will be added with account/backend setup.
+    </p>
+
+    <button class="send"
+      onclick="document.getElementById('libraryInput').click()">
+      ＋ Choose files
+    </button>
+
+    <input id="libraryInput" class="filePick" type="file" multiple
+      onchange="showLibraryFiles(this)">
+
+    <div class="libraryList" id="libraryFiles">No files selected.</div>
+  </div>
+
+</div>
+</section>
+
+<!-- SETTINGS -->
+
+<section id="settings" class="tab">
+<div class="panel">
+
+  <div class="title">
+    <h2>SETTINGS</h2>
+    <p>ACCOUNT • MEMORY • PREFERENCES</p>
+  </div>
+
+  <div class="settingsGrid">
+
+    <div class="settingCard">
+      <h3>Account</h3>
+      <p>Account sign-in and private user profiles will be connected in the backend phase.</p>
+
+      <input placeholder="Username (demo only)">
+
+      <button class="send"
+        onclick="demoNotice('Sign-in requires the secure backend, which is not connected yet.')">
+        Sign in
+      </button>
+    </div>
+
+    <div class="settingCard">
+      <h3>Memory</h3>
+      <p>Memory controls are planned here. This demo does not yet save personal memories between sessions.</p>
+
+      <label>
+        <input type="checkbox" id="memoryToggle">
+        Enable memory (demo toggle)
+      </label>
+
+      <p id="memoryStatus">Memory backend not connected.</p>
+
+      <button class="iconBtn"
+        onclick="demoNotice('Saved memory management will be enabled after account-linked storage is implemented.')">
+        Manage memories
+      </button>
+    </div>
+
+    <div class="settingCard">
+      <h3>Voice</h3>
+      <p>Use browser speech synthesis to read a demo response aloud. Voice recognition depends on your browser.</p>
+
+      <button class="send" onclick="speak('Hello! I am BORTAN 2.')">
+        Test voice
+      </button>
+    </div>
+
+  </div>
+
+</div>
+</section>
+
+</main>
+</div>
+
+<script>
+
+/* ==================================
+   INTRO SEQUENCE — FIXED
+   SCREEN 1 → SCREEN 2 → MAIN APP
+================================== */
+
+let lastDifficulty = 10;
+
+function sleep(ms){
+  return new Promise(resolve => setTimeout(resolve,ms));
+}
+
+async function typeText(element,text,speed=75){
+  element.textContent="";
+
+  for(let i=0;i<text.length;i++){
+    element.textContent+=text[i];
+    await sleep(speed);
+  }
+}
+
+async function playIntro(){
+
+  const intro1=document.getElementById("intro1");
+  const intro2=document.getElementById("intro2");
+  const app=document.getElementById("app");
+
+  const intro1Line1=document.getElementById("intro1Line1");
+  const intro1Line2=document.getElementById("intro1Line2");
+
+  const intro2Line1=document.getElementById("intro2Line1");
+  const intro2Line2=document.getElementById("intro2Line2");
+
+  /* Keep the main app hidden */
+  app.classList.remove("ready");
+  app.style.display="none";
+
+  /* Show only intro screen 1 */
+  intro1.classList.remove("hide");
+  intro1.style.display="grid";
+
+  intro2.classList.remove("hide");
+  intro2.style.display="none";
+
+  /* SCREEN 1 TYPEWRITER */
+  await typeText(intro1Line1,"Product by",90);
+  await sleep(300);
+  await typeText(intro1Line2,"In-Finite Creators Company",65);
+
+  /* Hold screen 1 */
+  await sleep(1800);
+
+  /* Fade out screen 1 */
+  intro1.classList.add("hide");
+  await sleep(850);
+
+  /* Fully remove screen 1 before screen 2 */
+  intro1.style.display="none";
+
+  /* SCREEN 2 appears only after screen 1 is gone */
+  intro2.style.display="grid";
+  intro2.classList.remove("hide");
+
+  /* SCREEN 2 TYPEWRITER */
+  await typeText(intro2Line1,"Produced by",90);
+  await sleep(300);
+  await typeText(intro2Line2,"Infinite AI CREATORS",70);
+
+  /* Hold screen 2 */
+  await sleep(1800);
+
+  /* Fade out screen 2 */
+  intro2.classList.add("hide");
+  await sleep(850);
+
+  /* Fully remove screen 2 */
+  intro2.style.display="none";
+
+  /* SCREEN 3: SHOW MAIN APP LAST */
+  app.style.display="flex";
+  app.classList.add("ready");
+}
+
+/* Start the intro after the page loads */
+window.addEventListener("load",playIntro);
+
+
+/* ==================================
+   NAVIGATION
+================================== */
+
+function openTab(id,btn){
+  document.querySelectorAll('.tab').forEach(x=>{
+    x.classList.remove('active');
+  });
+
+  document.getElementById(id).classList.add('active');
+
+  document.querySelectorAll('.nav').forEach(x=>{
+    x.classList.remove('active');
+  });
+
+  if(btn)btn.classList.add('active');
+}
+
+
+/* ==================================
+   SAFE HTML
+================================== */
+
+function escapeHTML(s){
+  return String(s).replace(/[&<>"']/g,c=>({
+    '&':'&amp;',
+    '<':'&lt;',
+    '>':'&gt;',
+    '"':'&quot;',
+    "'":'&#39;'
+  }[c]));
+}
+
+
+/* ==================================
+   DIFFICULTY ESTIMATION
+================================== */
+
+function estimateDifficulty(q){
+
+  let words=q.trim().split(/\s+/).length;
+
+  let score=Math.min(100,Math.max(10,words*2));
+
+  const signals=[
+    'why','explain','compare','calculate','prove',
+    'analyze','analyse','algorithm','derive',
+    'evaluate','design','program','code',
+    'step by step','complex','difference'
+  ];
+
+  signals.forEach(w=>{
+    if(q.toLowerCase().includes(w)){
+      score+=8;
+    }
+  });
+
+  if(/[=+\-*/^]/.test(q))score+=12;
+  if(q.includes('?'))score+=3;
+
+  score=Math.min(100,score);
+
+  let level=
+    score<20?'Easiest':
+    score<30?'Easy':
+    score<40?'Easier':
+    score<50?'Moderate':
+    score<60?'Mild':
+    score<70?'Hard':
+    score<80?'Difficult':
+    score<90?'Complex':
+    'Arduous';
+
+  return{score,level};
+}
+
+
+/* ==================================
+   BRAIN VISUALIZATION
+================================== */
+
+function setBrain(q){
+
+  const d=estimateDifficulty(q);
+
+  lastDifficulty=d.score;
+
+  const hue=205+d.score*1.35;
+
+  document.documentElement.style.setProperty(
+    '--brain',
+    d.score>88
+      ?'#f2baff'
+      :`hsl(${hue},95%,${68-d.score*.12}%)`
+  );
+
+  ['understanding','reasoning','knowledge','answer']
+    .forEach((n,i)=>{
+
+      let v=[
+        90,
+        Math.min(98,60+d.score*.4),
+        Math.min(99,55+d.score*.45),
+        Math.min(100,40+d.score*.6)
+      ][i];
+
+      document.getElementById(n+'Pct').textContent=
+        Math.round(v)+'%';
+
+      document.getElementById(n+'Bar').style.width=v+'%';
+    });
+
+  document.getElementById('brainStatus').innerHTML=
+    '<strong>QUESTION ANALYSED</strong><br>'+
+    'Estimated level: <strong>'+d.level+'</strong>'+
+    ' • Intensity: '+d.score+'%<br>'+
+    'Local heuristic only—not a trained difficulty detector.';
+
+  animateEnergy('brainEnergy',d.score);
+  animateEnergy('liveEnergy',d.score);
+
+  return d;
+}
+
+function animateEnergy(id,score){
+
+  let el=document.getElementById(id);
+
+  if(!el)return;
+
+  el.animate([
+    {
+      transform:'translate(0,0)',
+      opacity:1
+    },
+    {
+      transform:`translate(${Math.min(90,score)*7}px,${Math.sin(score)*70}px)`,
+      opacity:.35
+    },
+    {
+      transform:`translate(${score*9}px,0)`,
+      opacity:1
+    }
+  ],{
+    duration:1800,
+    iterations:1
+  });
+}
+
+
+/* ==================================
+   CHAT
+================================== */
+
+function addMessage(target,text,who){
+
+  let el=document.createElement('div');
+
+  el.className='message '+
+    (who==='user'?'userMessage':'bortanMessage');
+
+  el.innerHTML=who==='bot'
+    ?'<b>BORTAN 2 🧠</b><br><br>'+escapeHTML(text)
+    :escapeHTML(text);
+
+  document.getElementById(target).appendChild(el);
+
+  document.getElementById(target).scrollTop=999999;
+}
+
+async function ask(question,target){
+
+  question=question.trim();
+
+  if(!question)return;
+
+  let d=setBrain(question);
+
+  addMessage(target,question,'user');
+
+  let answer=
+    'This is the BORTAN 2 interface demo. '+
+    'Your question was estimated as '+d.level+
+    ' difficulty ('+d.score+'%). '+
+    'The actual AI model is not connected yet. '+
+    'Next we will connect the backend and your own model.';
+
+  try{
+
+    let res=await fetch('/ask',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json'
+      },
+      body:JSON.stringify({question})
+    });
+
+    if(res.ok){
+
+      let data=await res.json();
+
+      if(data.answer){
+        answer=data.answer;
+      }
+    }
+
+  }catch(e){
+    console.log('Backend is not connected yet.');
+  }
+
+  addMessage(target,answer,'bot');
+
+  if(target==='liveMessages'){
+
+    document.getElementById('liveStatus').innerHTML=
+      '<strong>LIVE RESPONSE COMPLETE</strong><br>'+
+      'Estimated difficulty: '+d.level+
+      ' ('+d.score+'%)';
+  }
+
+  if(window.speechSynthesis){
+    speak(answer);
+  }
+}
+
+function askFromChat(){
+
+  let i=document.getElementById('chatInput');
+
+  ask(i.value,'chatMessages');
+
+  i.value='';
+}
+
+function askFromLive(){
+
+  let i=document.getElementById('liveInput');
+
+  ask(i.value,'liveMessages');
+
+  i.value='';
+}
+
+
+/* ==================================
+   FILE ATTACHMENTS
+================================== */
+
+function showFiles(input){
+
+  let names=[...input.files].map(f=>f.name);
+
+  document.getElementById('fileHint').textContent=
+    names.length
+      ?'Selected: '+names.join(', ')+
+       ' (not uploaded to a server yet).'
+      :'No files selected.';
+}
+
+function showLibraryFiles(input){
+
+  document.getElementById('libraryFiles').textContent=
+    [...input.files]
+      .map(f=>'• '+f.name+' ('+Math.round(f.size/1024)+' KB)')
+      .join('\n')
+      ||'No files selected.';
+}
+
+
+/* ==================================
+   SETTINGS AND VOICE
+================================== */
+
+function demoNotice(msg){
+  alert(msg);
+}
+
+function speak(text){
+
+  if(!('speechSynthesis'in window)){
+    alert('Speech synthesis is not supported in this browser.');
+    return;
+  }
+
+  speechSynthesis.cancel();
+
+  let u=new SpeechSynthesisUtterance(text);
+
+  u.lang='en-IN';
+
+  speechSynthesis.speak(u);
+}
+
+function startVoice(id){
+
+  const SR=window.SpeechRecognition||
+           window.webkitSpeechRecognition;
+
+  if(!SR){
+    alert(
+      'Voice recognition is not supported in this browser. '+
+      'Try a supported browser or type your message.'
+    );
+    return;
+  }
+
+  let rec=new SR();
+
+  rec.lang='en-IN';
+  rec.interimResults=false;
+
+  rec.onresult=e=>{
+    document.getElementById(id).value=
+      e.results[0][0].transcript;
+  };
+
+  rec.onerror=()=>{
+    alert('Microphone recognition failed. Check browser microphone permission.');
+  };
+
+  rec.start();
+}
+
+</script>
+
+</body>
+</html>
