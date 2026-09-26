@@ -29,67 +29,151 @@ body{
 button,input,textarea{font:inherit}
 button{cursor:pointer;color:inherit}
 
-/* INTRO SCREENS */
+/* =========================
+   GOLD INTRO SCREENS
+========================= */
 
-.intro{
-  position:fixed;
-  inset:0;
-  z-index:1000;
-  background:#020307;
-  display:grid;
-  place-items:center;
-  text-align:center;
-  opacity:1;
-  visibility:visible;
-  transition:opacity .8s ease,visibility .8s ease;
+.intro {
+    position: fixed;
+    inset: 0;
+    z-index: 99999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #000;
+    text-align: center;
+    overflow: hidden;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 1.2s ease, visibility 1.2s ease;
 }
 
-.intro.hide{
-  opacity:0;
-  visibility:hidden;
-  pointer-events:none;
+.intro.hide {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
 }
 
-.gold{
-  font-family:Georgia,serif;
-  font-size:clamp(25px,5vw,54px);
-  font-weight:bold;
-  letter-spacing:2px;
-  line-height:1.5;
-  background:linear-gradient(
-    110deg,
-    #6e4b08,
-    #fff1a8 20%,
-    #bd8a20 38%,
-    #fff8c9 50%,
-    #a87812 70%,
-    #fff0a0 90%
-  );
-  background-size:250% auto;
-  color:transparent;
-  background-clip:text;
-  -webkit-background-clip:text;
-  animation:shine 2.4s linear infinite;
-  text-shadow:0 0 22px #b88b2a55;
+.introContent {
+    width: min(95%, 1100px);
+    padding: 25px;
+    position: relative;
 }
 
-@keyframes shine{
-  to{background-position:250% center}
+.introSmall {
+    color: #f6dfa0;
+    font-size: clamp(16px, 3vw, 28px);
+    letter-spacing: 8px;
+    margin-bottom: 25px;
+    text-transform: uppercase;
+    text-shadow: 0 0 12px rgba(255,210,100,.7);
 }
 
-.intro small{
-  display:block;
-  color:#c7a85d;
-  letter-spacing:5px;
-  margin-top:20px;
+.introMain {
+    display: block;
+    min-height: 1.5em;
+    font-size: clamp(25px, 5vw, 62px);
+    font-weight: 700;
+    letter-spacing: 5px;
+    line-height: 1.4;
+    text-transform: uppercase;
+
+    background: linear-gradient(
+        110deg,
+        #805b20 0%,
+        #f9df8a 20%,
+        #fff8d6 35%,
+        #c99a3e 50%,
+        #fff1ad 65%,
+        #a67524 80%,
+        #ffe9a0 100%
+    );
+
+    background-size: 250% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+
+    filter: drop-shadow(0 0 12px rgba(255,190,70,.4));
+
+    animation: goldShimmer 4s linear infinite;
 }
 
-.typeLine{
-  display:block;
-  min-height:1.5em;
+.introSmall {
+    opacity: 0;
+    animation: fadeInGold 1s ease forwards;
+    animation-delay: .3s;
 }
+
+.introLine {
+    width: 0;
+    height: 2px;
+    margin: 35px auto 0;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #fff0a8,
+        #c69a45,
+        #fff0a8,
+        transparent
+    );
+    box-shadow: 0 0 18px #e8b94f;
+    animation: lineGrow 1.5s ease forwards;
+    animation-delay: .4s;
+}
+
+.introSpark {
+    position: absolute;
+    width: 3px;
+    height: 3px;
+    background: #fff3bd;
+    border-radius: 50%;
+    box-shadow: 0 0 12px 4px rgba(255,205,100,.5);
+    animation: sparkle 2s infinite alternate;
+}
+
+@keyframes goldShimmer {
+    0% { background-position: 100% 0; }
+    100% { background-position: -150% 0; }
+}
+
+@keyframes fadeInGold {
+    to { opacity: 1; }
+}
+
+@keyframes lineGrow {
+    to { width: min(75%, 650px); }
+}
+
+@keyframes sparkle {
+    from {
+        opacity: .1;
+        transform: scale(.5);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1.8);
+    }
+}
+
+.typeCursor::after {
+    content: "|";
+    display: inline-block;
+    color: #ffe9a0;
+    margin-left: 5px;
+    animation: cursorBlink .7s steps(2, start) infinite;
+}
+
+@keyframes cursorBlink {
+    to { visibility: hidden; }
+}
+
+
 
 /* MAIN APP */
+
+.app.show{display:flex;}
 
 .app{
   display:none;
@@ -504,34 +588,37 @@ button{cursor:pointer;color:inherit}
 
 <body>
 
-<!-- SCREEN 1: COMPANY INTRO -->
-<!-- FIXED: no "hide" class; visible immediately -->
+<!-- INTRO SCREEN 1 -->
 
-<div id="intro1" class="intro" style="display:grid;">
-  <div>
-    <div class="gold">
-      <span id="intro1Line1" class="typeLine"></span>
-      <span id="intro1Line2" class="typeLine"></span>
+<div id="intro1" class="intro">
+    <div class="introSpark" style="top:20%;left:20%"></div>
+    <div class="introSpark" style="top:70%;left:80%"></div>
+    <div class="introSpark" style="top:35%;left:85%"></div>
+    <div class="introSpark" style="top:80%;left:15%"></div>
+
+    <div class="introContent">
+        <div class="introSmall">Product by</div>
+        <div class="introMain" id="introText1"></div>
+        <div class="introLine"></div>
     </div>
-    <small>INFINITE INNOVATION</small>
-  </div>
 </div>
 
-<!-- SCREEN 2: AI DIVISION INTRO -->
-<!-- Starts hidden, but does NOT have the hide class -->
+<!-- INTRO SCREEN 2 -->
 
-<div id="intro2" class="intro" style="display:none;">
-  <div>
-    <div class="gold">
-      <span id="intro2Line1" class="typeLine"></span>
-      <span id="intro2Line2" class="typeLine"></span>
+<div id="intro2" class="intro hide">
+    <div class="introSpark" style="top:20%;left:20%"></div>
+    <div class="introSpark" style="top:70%;left:80%"></div>
+    <div class="introSpark" style="top:35%;left:85%"></div>
+    <div class="introSpark" style="top:80%;left:15%"></div>
+
+    <div class="introContent">
+        <div class="introSmall">Produced by</div>
+        <div class="introMain" id="introText2"></div>
+        <div class="introLine"></div>
     </div>
-    <small>INTRODUCING BORTAN 2</small>
-  </div>
 </div>
 
-<!-- SCREEN 3: MAIN APP -->
-<!-- FIXED: remove "ready" so the app cannot flash early -->
+
 
 <div class="app" id="app">
 
@@ -564,7 +651,7 @@ button{cursor:pointer;color:inherit}
 <header class="header">
   <div class="brand">
     <h1>BORTAN 2</h1>
-    <p>BRAIN-OPTIMIZED RAGED TERABYTE ALGORITHMIC-ANALYTIC NEUTRAL-NODE</p>
+    <p>BRAIN-OPTIMIZED RAGED TERABYTE ALGORITHMIC-ANALYTIC NEUTRAL-NODE version-2</p>
   </div>
   <div class="pill">● LOCAL DEMO</div>
 </header>
@@ -784,14 +871,16 @@ button{cursor:pointer;color:inherit}
 
     <div class="settingCard">
       <h3>Account</h3>
-      <p>Account sign-in and private user profiles will be connected in the backend phase.</p>
-
-      <input placeholder="Username (demo only)">
-
-      <button class="send"
-        onclick="demoNotice('Sign-in requires the secure backend, which is not connected yet.')">
-        Sign in
-      </button>
+      <p id="accountStatus">You are signed out. Create an account or sign in.</p>
+      <input id="accountUsername" autocomplete="username" placeholder="Username (3–30 characters)">
+      <input id="accountPassword" type="password" autocomplete="current-password" placeholder="Password (at least 8 characters)">
+      <button class="send" id="accountAction" onclick="accountSubmit()">Sign in</button>
+      <button class="iconBtn" id="accountMode" onclick="toggleAccountMode()">Create account instead</button>
+      <button class="iconBtn" id="logoutButton" style="display:none" onclick="logoutAccount()">Sign out</button>
+      <hr style="border-color:var(--line);margin:18px 0">
+      <h3>Private Chat History</h3>
+      <button class="iconBtn" onclick="newPrivateChat()">＋ New chat</button>
+      <div id="conversationList" class="libraryList" style="margin-top:12px">Sign in to view your private chats.</div>
     </div>
 
     <div class="settingCard">
@@ -830,90 +919,84 @@ button{cursor:pointer;color:inherit}
 
 <script>
 
-/* ==================================
-   INTRO SEQUENCE — FIXED
-   SCREEN 1 → SCREEN 2 → MAIN APP
-================================== */
+/* =========================
+   INTRO TYPEWRITER
+========================= */
 
-let lastDifficulty = 10;
+function typeWriter(element, text, speed, callback) {
+    let index = 0;
 
-function sleep(ms){
-  return new Promise(resolve => setTimeout(resolve,ms));
+    element.textContent = "";
+    element.classList.add("typeCursor");
+
+    function typeNext() {
+        if (index < text.length) {
+            element.textContent += text.charAt(index);
+            index++;
+            setTimeout(typeNext, speed);
+        } else {
+            element.classList.remove("typeCursor");
+
+            if (callback) {
+                setTimeout(callback, 1000);
+            }
+        }
+    }
+
+    typeNext();
 }
 
-async function typeText(element,text,speed=75){
-  element.textContent="";
+function startIntro() {
+    const intro1 = document.getElementById("intro1");
+    const intro2 = document.getElementById("intro2");
+    const app = document.getElementById("app");
 
-  for(let i=0;i<text.length;i++){
-    element.textContent+=text[i];
-    await sleep(speed);
-  }
+    const text1 = document.getElementById("introText1");
+    const text2 = document.getElementById("introText2");
+
+    intro1.classList.remove("hide");
+    intro2.classList.add("hide");
+    app.classList.remove("show");
+
+    typeWriter(
+        text1,
+        "In-Finite Creators Company",
+        100,
+        function() {
+            setTimeout(function() {
+                intro1.classList.add("hide");
+
+                setTimeout(function() {
+                    intro2.classList.remove("hide");
+
+                    typeWriter(
+                        text2,
+                        "Infinite AI CREATORS",
+                        100,
+                        function() {
+                            setTimeout(function() {
+                                intro2.classList.add("hide");
+
+                                setTimeout(function() {
+                                    app.classList.add("show");
+                                }, 1300);
+
+                            }, 1500);
+                        }
+                    );
+
+                }, 1300);
+
+            }, 1500);
+        }
+    );
 }
 
-async function playIntro(){
+/* Always start intro when page loads */
+window.addEventListener("DOMContentLoaded", function() {
+    startIntro();
+});
 
-  const intro1=document.getElementById("intro1");
-  const intro2=document.getElementById("intro2");
-  const app=document.getElementById("app");
-
-  const intro1Line1=document.getElementById("intro1Line1");
-  const intro1Line2=document.getElementById("intro1Line2");
-
-  const intro2Line1=document.getElementById("intro2Line1");
-  const intro2Line2=document.getElementById("intro2Line2");
-
-  /* Keep the main app hidden */
-  app.classList.remove("ready");
-  app.style.display="none";
-
-  /* Show only intro screen 1 */
-  intro1.classList.remove("hide");
-  intro1.style.display="grid";
-
-  intro2.classList.remove("hide");
-  intro2.style.display="none";
-
-  /* SCREEN 1 TYPEWRITER */
-  await typeText(intro1Line1,"Product by",90);
-  await sleep(300);
-  await typeText(intro1Line2,"In-Finite Creators Company",65);
-
-  /* Hold screen 1 */
-  await sleep(1800);
-
-  /* Fade out screen 1 */
-  intro1.classList.add("hide");
-  await sleep(850);
-
-  /* Fully remove screen 1 before screen 2 */
-  intro1.style.display="none";
-
-  /* SCREEN 2 appears only after screen 1 is gone */
-  intro2.style.display="grid";
-  intro2.classList.remove("hide");
-
-  /* SCREEN 2 TYPEWRITER */
-  await typeText(intro2Line1,"Produced by",90);
-  await sleep(300);
-  await typeText(intro2Line2,"Infinite AI CREATORS",70);
-
-  /* Hold screen 2 */
-  await sleep(1800);
-
-  /* Fade out screen 2 */
-  intro2.classList.add("hide");
-  await sleep(850);
-
-  /* Fully remove screen 2 */
-  intro2.style.display="none";
-
-  /* SCREEN 3: SHOW MAIN APP LAST */
-  app.style.display="flex";
-  app.classList.add("ready");
-}
-
-/* Start the intro after the page loads */
-window.addEventListener("load",playIntro);
 
 
 /* ==================================
@@ -1086,6 +1169,80 @@ function addMessage(target,text,who){
   document.getElementById(target).scrollTop=999999;
 }
 
+let currentConversationId=null;
+let accountMode='login';
+
+async function api(path,options={}){
+  const response=await fetch(path,{credentials:'same-origin',...options,headers:{'Content-Type':'application/json',...(options.headers||{})}});
+  let data={}; try{data=await response.json()}catch(e){}
+  if(!response.ok) throw new Error(data.error||'Request failed.');
+  return data;
+}
+
+function toggleAccountMode(){
+  accountMode=accountMode==='login'?'signup':'login';
+  document.getElementById('accountAction').textContent=accountMode==='login'?'Sign in':'Create account';
+  document.getElementById('accountMode').textContent=accountMode==='login'?'Create account instead':'Back to sign in';
+  document.getElementById('accountPassword').autocomplete=accountMode==='login'?'current-password':'new-password';
+}
+
+async function accountSubmit(){
+  const username=document.getElementById('accountUsername').value.trim();
+  const password=document.getElementById('accountPassword').value;
+  try{
+    const data=await api(accountMode==='login'?'/api/login':'/api/signup',{method:'POST',body:JSON.stringify({username,password})});
+    document.getElementById('accountStatus').textContent='Signed in as '+data.user.username;
+    document.getElementById('logoutButton').style.display='inline-block';
+    document.getElementById('accountPassword').value='';
+    document.getElementById('accountAction').style.display='none';
+    document.getElementById('accountMode').style.display='none';
+    await loadConversations();
+    alert(data.message);
+  }catch(e){alert(e.message)}
+}
+
+async function logoutAccount(){
+  try{await api('/api/logout',{method:'POST'}); currentConversationId=null;
+    document.getElementById('accountStatus').textContent='You are signed out.';
+    document.getElementById('logoutButton').style.display='none';
+    document.getElementById('accountAction').style.display='inline-block';
+    document.getElementById('accountMode').style.display='inline-block';
+    document.getElementById('conversationList').textContent='Sign in to view your private chats.';
+    alert('Signed out.');
+  }catch(e){alert(e.message)}
+}
+
+async function loadConversations(){
+  try{const data=await api('/api/conversations'); const box=document.getElementById('conversationList'); box.replaceChildren();
+    if(!data.conversations.length){box.textContent='No saved chats yet.';return;}
+    data.conversations.forEach(c=>{const row=document.createElement('div');row.style.margin='8px 0';
+      const b=document.createElement('button');b.className='iconBtn';b.textContent=c.title;b.style.maxWidth='100%';b.onclick=()=>openPrivateChat(c.id);row.appendChild(b);
+      const del=document.createElement('button');del.className='iconBtn';del.textContent='🗑';del.title='Delete chat';del.onclick=()=>deletePrivateChat(c.id);row.appendChild(del);box.appendChild(row);});
+  }catch(e){document.getElementById('conversationList').textContent='Sign in to view your private chats.';}
+}
+
+async function newPrivateChat(){
+  try{const data=await api('/api/conversations',{method:'POST',body:JSON.stringify({title:'New Chat'})});currentConversationId=data.conversation.id;
+    document.getElementById('chatMessages').replaceChildren(); addMessage('chatMessages','New private chat started.','bot'); await loadConversations();openTab('chat',document.querySelector('.nav'));
+  }catch(e){alert('Please sign in before starting a private chat. '+e.message)}
+}
+
+async function openPrivateChat(id){
+  try{const data=await api('/api/conversations/'+id+'/messages');currentConversationId=id;const box=document.getElementById('chatMessages');box.replaceChildren();
+    data.messages.forEach(m=>addMessage('chatMessages',m.content,m.role==='user'?'user':'bot'));openTab('chat',document.querySelector('.nav'));
+  }catch(e){alert(e.message)}
+}
+
+async function deletePrivateChat(id){
+  if(!confirm('Delete this conversation and its messages?'))return;
+  try{await api('/api/conversations/'+id,{method:'DELETE'});if(currentConversationId===id)currentConversationId=null;await loadConversations();}
+  catch(e){alert(e.message)}
+}
+
+async function checkAccount(){
+  try{const d=await api('/api/me');if(d.logged_in){document.getElementById('accountStatus').textContent='Signed in as '+d.user.username;document.getElementById('logoutButton').style.display='inline-block';document.getElementById('accountAction').style.display='none';document.getElementById('accountMode').style.display='none';await loadConversations();}}catch(e){}
+}
+
 async function ask(question,target){
 
   question=question.trim();
@@ -1095,6 +1252,13 @@ async function ask(question,target){
   let d=setBrain(question);
 
   addMessage(target,question,'user');
+
+  if(target==='chatMessages') {
+    try {
+      if(!currentConversationId){const created=await api('/api/conversations',{method:'POST',body:JSON.stringify({title:question.slice(0,60)||'New Chat'})});currentConversationId=created.conversation.id;}
+      await api('/api/conversations/'+currentConversationId+'/messages',{method:'POST',body:JSON.stringify({role:'user',content:question})});
+    } catch(e) { alert('Sign in to save private chat history. Your message remains visible in this session.'); }
+  }
 
   let answer=
     'This is the BORTAN 2 interface demo. '+
@@ -1127,6 +1291,8 @@ async function ask(question,target){
   }
 
   addMessage(target,answer,'bot');
+
+  if(target==='chatMessages' && currentConversationId){try{await api('/api/conversations/'+currentConversationId+'/messages',{method:'POST',body:JSON.stringify({role:'assistant',content:answer})});await loadConversations();}catch(e){console.log('Could not save assistant reply:',e.message)}}
 
   if(target==='liveMessages'){
 
