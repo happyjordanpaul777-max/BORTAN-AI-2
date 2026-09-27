@@ -186,7 +186,8 @@ button{cursor:pointer;color:inherit}
 }
 
 .sidebar{
-  width:108px;
+  width:220px;
+  flex:0 0 auto;
   padding:18px 12px;
   background:#030c1de8;
   border-right:1px solid var(--line);
@@ -196,6 +197,11 @@ button{cursor:pointer;color:inherit}
   align-items:stretch;
 }
 
+.sidebar.collapsed{width:0;flex-basis:0;padding:0;border:0;overflow:hidden}
+.sidebarToggle{border:1px solid var(--line);background:#0b2040;border-radius:12px;padding:10px 13px;font-size:18px;min-width:44px}
+.sidebarToggle:hover{background:#153d70;border-color:var(--blue)}
+.sidebar .nav{font-size:12px;text-align:left;padding:13px 12px;display:flex;align-items:center;gap:12px}
+.sidebar .nav span{display:inline-block;font-size:21px;margin:0;min-width:26px;text-align:center}
 .logo{
   height:66px;
   border-radius:18px;
@@ -329,6 +335,11 @@ button{cursor:pointer;color:inherit}
   border:1px solid #6eb8ff3c;
   border-bottom-left-radius:4px;
 }
+
+.voiceControls{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.voiceControls button{background:#09234a;color:#dff2ff;border:1px solid #5caeff66;border-radius:10px;padding:6px 10px;cursor:pointer;font-size:12px}
+.voiceControls button:hover{background:#174477}
+.voiceStatus{font-size:11px;color:#9fc9ef;margin-top:6px}
 
 .composer{
   display:flex;
@@ -557,6 +568,8 @@ button{cursor:pointer;color:inherit}
 }
 
 .filePick{display:none}
+.fileChip{display:inline-flex;align-items:center;gap:6px;background:rgba(80,130,190,.14);border:1px solid var(--line);padding:6px 9px;border-radius:10px;margin:5px 4px 0 0}
+.fileChip button{border:0;background:transparent;color:inherit;cursor:pointer;font-size:18px}
 .notice{font-size:11px;color:#9ab2d7}
 .mobileMenu{display:none}
 
@@ -566,6 +579,7 @@ button{cursor:pointer;color:inherit}
   .stats{grid-template-columns:repeat(2,1fr)}
   .main{padding:15px}
   .sidebar{width:80px;padding:12px 7px}
+  .sidebar.collapsed{width:0;padding:0;border:0;overflow:hidden}
   .nav{font-size:0}
   .nav span{font-size:23px;margin:0}
   .brand p,.pill{display:none}
@@ -622,8 +636,9 @@ button{cursor:pointer;color:inherit}
 
 <div class="app" id="app">
 
-<aside class="sidebar">
+<aside class="sidebar" id="sidebar">
   <div class="logo">B</div>
+  <button class="nav" onclick="togglePrivateMode()" title="Start a temporary private chat"><span>◉</span>PRIVATE CHAT</button>
 
   <button class="nav active" onclick="openTab('chat',this)">
     <span>💬</span>CHAT
@@ -649,6 +664,7 @@ button{cursor:pointer;color:inherit}
 <main class="main">
 
 <header class="header">
+  <button class="sidebarToggle" id="sidebarToggle" onclick="toggleSidebar()" aria-label="Close sidebar" title="Close sidebar">☰</button>
   <div class="brand">
     <h1>BORTAN 2</h1>
     <p>BRAIN-OPTIMIZED RAGED TERABYTE ALGORITHMIC-ANALYTIC NEUTRAL-NODE version-2</p>
@@ -662,8 +678,9 @@ button{cursor:pointer;color:inherit}
 <div class="panel">
 
   <div class="title">
-    <h2>BORTAN AI CHAT</h2>
-    <p>ASK • THINK • EXPLORE</p>
+    <h2 id="chatHeading">BORTAN AI CHAT</h2>
+    <p id="chatModeNote">ASK • THINK • EXPLORE</p>
+    <button class="iconBtn" id="privateModeButton" onclick="togglePrivateMode()">Start Private Chat</button>
   </div>
 
   <div class="chatMessages" id="chatMessages">
@@ -851,7 +868,11 @@ button{cursor:pointer;color:inherit}
     <input id="libraryInput" class="filePick" type="file" multiple
       onchange="showLibraryFiles(this)">
 
-    <div class="libraryList" id="libraryFiles">No files selected.</div>
+    <div class="libraryActions" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+      <button class="iconBtn" type="button" onclick="document.getElementById('libraryInput').click()">＋ Add files</button>
+      <button class="iconBtn" type="button" onclick="clearLibrary()">Clear list</button>
+    </div>
+    <div class="libraryList" id="libraryFiles" style="margin-top:14px">No files added yet. Use ＋ Add files to choose documents, images, or videos.</div>
   </div>
 
 </div>
@@ -904,9 +925,13 @@ button{cursor:pointer;color:inherit}
       <h3>Voice</h3>
       <p>Use browser speech synthesis to read a demo response aloud. Voice recognition depends on your browser.</p>
 
-      <button class="send" onclick="speak('Hello! I am BORTAN 2.')">
-        Test voice
-      </button>
+      <button class="send" onclick="speak('Hello! I am BORTAN 2.')">Test voice</button>
+      <div class="voiceControls" style="margin-top:10px">
+        <button type="button" onclick="pauseVoice()">⏸ Pause</button>
+        <button type="button" onclick="resumeVoice()">▶ Resume</button>
+        <button type="button" onclick="stopVoice()">⏹ Stop</button>
+      </div>
+      <p class="voiceStatus">Uses your browser's built-in speech voice. No external voice model is connected.</p>
     </div>
 
   </div>
@@ -1160,9 +1185,10 @@ function addMessage(target,text,who){
   el.className='message '+
     (who==='user'?'userMessage':'bortanMessage');
 
-  el.innerHTML=who==='bot'
-    ?'<b>BORTAN 2 🧠</b><br><br>'+escapeHTML(text)
-    :escapeHTML(text);
+  if(who==='bot'){
+    el.innerHTML='<b>BORTAN 2 🧠</b><br><br><div class="messageText">'+escapeHTML(text)+'</div>'+
+      '<div class="voiceControls"><button type="button" onclick="speakMessage(this)" title="Read this response aloud">🔊 Listen</button></div>';
+  }else{el.innerHTML=escapeHTML(text);}
 
   document.getElementById(target).appendChild(el);
 
@@ -1170,7 +1196,39 @@ function addMessage(target,text,who){
 }
 
 let currentConversationId=null;
+let privateMode=false;
 let accountMode='login';
+
+function toggleSidebar(){
+  const sidebar=document.getElementById('sidebar');
+  const collapsed=sidebar.classList.toggle('collapsed');
+  const button=document.getElementById('sidebarToggle');
+  button.textContent=collapsed?'☰':'✕';
+  button.title=collapsed?'Open sidebar':'Close sidebar';
+  button.setAttribute('aria-label',button.title);
+}
+
+function togglePrivateMode(){
+  if(privateMode){
+    privateMode=false;
+    currentConversationId=null;
+    const box=document.getElementById('chatMessages');
+    box.replaceChildren();
+    addMessage('chatMessages','Private session ended. This temporary conversation was cleared from the page. Start a normal chat to save conversations to your account.','bot');
+    document.getElementById('chatHeading').textContent='BORTAN AI CHAT';
+    document.getElementById('chatModeNote').textContent='ASK • THINK • EXPLORE';
+    document.getElementById('privateModeButton').textContent='Start Private Chat';
+    return;
+  }
+  privateMode=true;
+  currentConversationId=null;
+  const box=document.getElementById('chatMessages');
+  box.replaceChildren();
+  addMessage('chatMessages','Private Chat is on. This session is not saved to your chat history or BORTAN memory. End the private session to clear this view.','bot');
+  document.getElementById('chatHeading').textContent='BORTAN PRIVATE CHAT';
+  document.getElementById('chatModeNote').textContent='TEMPORARY • NOT SAVED TO HISTORY';
+  document.getElementById('privateModeButton').textContent='End Private Chat';
+}
 
 async function api(path,options={}){
   const response=await fetch(path,{credentials:'same-origin',...options,headers:{'Content-Type':'application/json',...(options.headers||{})}});
@@ -1253,11 +1311,11 @@ async function ask(question,target){
 
   addMessage(target,question,'user');
 
-  if(target==='chatMessages') {
+  if(target==='chatMessages' && !privateMode) {
     try {
       if(!currentConversationId){const created=await api('/api/conversations',{method:'POST',body:JSON.stringify({title:question.slice(0,60)||'New Chat'})});currentConversationId=created.conversation.id;}
       await api('/api/conversations/'+currentConversationId+'/messages',{method:'POST',body:JSON.stringify({role:'user',content:question})});
-    } catch(e) { alert('Sign in to save private chat history. Your message remains visible in this session.'); }
+    } catch(e) { console.log('Sign in to save normal chat history. The message remains visible in this session.'); }
   }
 
   let answer=
@@ -1292,7 +1350,7 @@ async function ask(question,target){
 
   addMessage(target,answer,'bot');
 
-  if(target==='chatMessages' && currentConversationId){try{await api('/api/conversations/'+currentConversationId+'/messages',{method:'POST',body:JSON.stringify({role:'assistant',content:answer})});await loadConversations();}catch(e){console.log('Could not save assistant reply:',e.message)}}
+  if(target==='chatMessages' && currentConversationId && !privateMode){try{await api('/api/conversations/'+currentConversationId+'/messages',{method:'POST',body:JSON.stringify({role:'assistant',content:answer})});await loadConversations();}catch(e){console.log('Could not save assistant reply:',e.message)}}
 
   if(target==='liveMessages'){
 
@@ -1302,9 +1360,7 @@ async function ask(question,target){
       ' ('+d.score+'%)';
   }
 
-  if(window.speechSynthesis){
-    speak(answer);
-  }
+  // Voice playback is user-triggered; do not automatically read answers aloud.
 }
 
 function askFromChat(){
@@ -1330,25 +1386,58 @@ function askFromLive(){
    FILE ATTACHMENTS
 ================================== */
 
+let chatAttachments=[];
+let libraryItems=[];
+
+function formatFileSize(bytes){
+  if(bytes<1024) return bytes+' B';
+  if(bytes<1024*1024) return (bytes/1024).toFixed(1)+' KB';
+  return (bytes/(1024*1024)).toFixed(1)+' MB';
+}
+
 function showFiles(input){
+  chatAttachments=[...chatAttachments,...Array.from(input.files)];
+  const hint=document.getElementById('fileHint');
+  if(!chatAttachments.length){hint.textContent='No files selected.';return;}
+  hint.innerHTML='<strong>Attached for this message (local demo only):</strong><br>'+chatAttachments.map((f,i)=>
+    '<span class="fileChip">📎 '+escapeHTML(f.name)+' ('+formatFileSize(f.size)+') <button type="button" aria-label="Remove '+escapeHTML(f.name)+'" onclick="removeChatAttachment('+i+')">×</button></span>'
+  ).join(' ');
+  input.value='';
+}
 
-  let names=[...input.files].map(f=>f.name);
+function removeChatAttachment(index){
+  chatAttachments.splice(index,1);
+  const input=document.getElementById('fileInput');
+  showChatAttachmentList();
+}
 
-  document.getElementById('fileHint').textContent=
-    names.length
-      ?'Selected: '+names.join(', ')+
-       ' (not uploaded to a server yet).'
-      :'No files selected.';
+function showChatAttachmentList(){
+  const hint=document.getElementById('fileHint');
+  hint.innerHTML=chatAttachments.length
+    ?'<strong>Attached for this message (local demo only):</strong><br>'+chatAttachments.map((f,i)=>'<span class="fileChip">📎 '+escapeHTML(f.name)+' ('+formatFileSize(f.size)+') <button type="button" onclick="removeChatAttachment('+i+')">×</button></span>').join(' ')
+    :'＋ Attachments are selected locally for this demo; server upload and AI file reading are not connected yet.';
 }
 
 function showLibraryFiles(input){
-
-  document.getElementById('libraryFiles').textContent=
-    [...input.files]
-      .map(f=>'• '+f.name+' ('+Math.round(f.size/1024)+' KB)')
-      .join('\n')
-      ||'No files selected.';
+  const incoming=Array.from(input.files);
+  libraryItems.push(...incoming);
+  input.value='';
+  renderLibrary();
 }
+
+function renderLibrary(){
+  const list=document.getElementById('libraryFiles');
+  if(!libraryItems.length){list.textContent='No files added yet. Use ＋ Add files to choose documents, images, or videos.';return;}
+  list.innerHTML=libraryItems.map((f,i)=>{
+    const type=f.type||'File';
+    const preview=f.type.startsWith('image/')?'<img src="'+URL.createObjectURL(f)+'" alt="'+escapeHTML(f.name)+'" style="max-width:100%;max-height:130px;border-radius:10px;margin-top:8px">':
+      f.type.startsWith('video/')?'<video controls preload="metadata" style="max-width:100%;max-height:180px;margin-top:8px"><source src="'+URL.createObjectURL(f)+'" type="'+escapeHTML(f.type)+'"></video>':'';
+    return '<div class="settingCard" style="margin:10px 0;padding:12px"><strong>📄 '+escapeHTML(f.name)+'</strong><div class="hint">'+escapeHTML(type)+' • '+formatFileSize(f.size)+'</div>'+preview+'<div style="margin-top:8px"><button class="iconBtn" type="button" onclick="removeLibraryFile('+i+')">Remove</button></div></div>';
+  }).join('');
+}
+
+function removeLibraryFile(index){libraryItems.splice(index,1);renderLibrary();}
+function clearLibrary(){libraryItems=[];renderLibrary();}
 
 
 /* ==================================
@@ -1359,20 +1448,44 @@ function demoNotice(msg){
   alert(msg);
 }
 
-function speak(text){
+let activeUtterance=null;
+let activeVoiceButton=null;
 
-  if(!('speechSynthesis'in window)){
-    alert('Speech synthesis is not supported in this browser.');
+function speakMessage(button){
+  const message=button.closest('.bortanMessage');
+  const text=message?.querySelector('.messageText')?.innerText?.trim();
+  if(!text)return;
+  speak(text,button);
+}
+
+function speak(text,button=null){
+  if(!('speechSynthesis' in window)){
+    alert('Speech playback is not supported in this browser. Try an updated browser.');
     return;
   }
-
-  speechSynthesis.cancel();
-
-  let u=new SpeechSynthesisUtterance(text);
-
+  window.speechSynthesis.cancel();
+  activeUtterance=null;
+  if(activeVoiceButton) activeVoiceButton.textContent='🔊 Listen';
+  activeVoiceButton=button;
+  const u=new SpeechSynthesisUtterance(text);
   u.lang='en-IN';
+  u.onstart=()=>{if(button)button.textContent='⏸ Pause';};
+  u.onend=()=>{if(button)button.textContent='🔊 Listen';activeUtterance=null;activeVoiceButton=null;};
+  u.onerror=()=>{if(button)button.textContent='🔊 Listen';activeUtterance=null;activeVoiceButton=null;};
+  activeUtterance=u;
+  window.speechSynthesis.speak(u);
+}
 
-  speechSynthesis.speak(u);
+function pauseVoice(){
+  if(window.speechSynthesis?.speaking && !window.speechSynthesis.paused){window.speechSynthesis.pause();if(activeVoiceButton)activeVoiceButton.textContent='▶ Resume';}
+}
+function resumeVoice(){
+  if(window.speechSynthesis?.paused){window.speechSynthesis.resume();if(activeVoiceButton)activeVoiceButton.textContent='⏸ Pause';}
+}
+function stopVoice(){
+  if('speechSynthesis' in window)window.speechSynthesis.cancel();
+  if(activeVoiceButton)activeVoiceButton.textContent='🔊 Listen';
+  activeUtterance=null;activeVoiceButton=null;
 }
 
 function startVoice(id){
