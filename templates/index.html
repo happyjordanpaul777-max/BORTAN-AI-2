@@ -197,7 +197,7 @@ button{cursor:pointer;color:inherit}
   align-items:stretch;
 }
 
-.sidebar.collapsed{width:0;flex-basis:0;padding:0;border:0;overflow:hidden}
+.sidebar.collapsed{width:76px;flex:0 0 76px;padding:14px 8px;overflow-y:auto}.sidebar.collapsed .nav{justify-content:center;padding:12px 8px;font-size:0;gap:0}.sidebar.collapsed .nav span{font-size:22px;min-width:26px}.sidebar.collapsed .logo{font-size:0}.sidebar.collapsed .logo:after{content:"B";font-size:30px}.sidebar.collapsed .historyHeading,.sidebar.collapsed #sidebarHistory,.sidebar.collapsed .navText{display:none}.sidebar.collapsed .nav[title]{position:relative}
 .sidebarToggle{border:1px solid var(--line);background:#0b2040;border-radius:12px;padding:10px 13px;font-size:18px;min-width:44px}
 .sidebarToggle:hover{background:#153d70;border-color:var(--blue)}
 .sidebar .nav{font-size:12px;text-align:left;padding:13px 12px;display:flex;align-items:center;gap:12px}
@@ -339,6 +339,10 @@ button{cursor:pointer;color:inherit}
 .voiceControls{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
 .voiceControls button{background:#09234a;color:#dff2ff;border:1px solid #5caeff66;border-radius:10px;padding:6px 10px;cursor:pointer;font-size:12px}
 .voiceControls button:hover{background:#174477}
+.messageActions{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.messageActions button{background:#09234a;color:#dff2ff;border:1px solid #5caeff66;border-radius:10px;padding:6px 10px;cursor:pointer;font-size:12px}
+.messageActions button:hover{background:#174477}
+.chatDisclaimer{font-size:11px;color:#9ab2d7;margin:4px 5px 0;text-align:center}
 .voiceStatus{font-size:11px;color:#9fc9ef;margin-top:6px}
 
 .composer{
@@ -638,26 +642,29 @@ button{cursor:pointer;color:inherit}
 
 <aside class="sidebar" id="sidebar">
   <div class="logo">B</div>
-  <button class="nav" onclick="togglePrivateMode()" title="Start a temporary private chat"><span>◉</span>PRIVATE CHAT</button>
+  <button class="nav" onclick="togglePrivateMode()" title="Start a temporary private chat"><span>◉</span><span class="navText">PRIVATE CHAT</span></button>
+  <button class="nav" onclick="newNormalChat()" title="New chat"><span>＋</span><span class="navText">NEW CHAT</span></button>
+  <div class="historyHeading" style="color:#9db7d8;font-size:12px;font-weight:700;padding:10px 12px 0">CHAT HISTORY</div>
+  <div id="sidebarHistory" class="libraryList" style="max-height:35vh;overflow-y:auto"></div>
 
-  <button class="nav active" onclick="openTab('chat',this)">
-    <span>💬</span>CHAT
+  <button class="nav active" onclick="openTab('chat',this)" title="Chat">
+    <span>💬</span><span class="navText">CHAT</span>
   </button>
 
   <button class="nav" onclick="openTab('brain',this)">
-    <span>🧠</span>BRAIN
+    <span>🧠</span><span class="navText">BRAIN</span>
   </button>
 
   <button class="nav" onclick="openTab('live',this)">
-    <span>⚡</span>LIVE
+    <span>⚡</span><span class="navText">LIVE</span>
   </button>
 
   <button class="nav" onclick="openTab('library',this)">
-    <span>▤</span>LIBRARY
+    <span>▤</span><span class="navText">LIBRARY</span>
   </button>
 
   <button class="nav bottom" onclick="openTab('settings',this)">
-    <span>⚙</span>SETTINGS
+    <span>⚙</span><span class="navText">SETTINGS</span>
   </button>
 </aside>
 
@@ -688,7 +695,7 @@ button{cursor:pointer;color:inherit}
       <b>BORTAN 2 🧠</b><br><br>
       Hello! I am BORTAN 2, created by Infinite AI Creators.
       <br><br>
-      This is the local interface demo. Connect the actual AI backend to enable real model responses, accounts, and persistent memory.
+      This is the local interface demo. Connect the actual A I backend to enable real model responses, BORTAN accounts, and persistent memory.
     </div>
   </div>
 
@@ -712,6 +719,7 @@ button{cursor:pointer;color:inherit}
   <div class="hint" id="fileHint">
     ＋ Attachments are selected locally for this demo; upload storage will be connected in the backend phase.
   </div>
+  <div class="chatDisclaimer">BORTAN 2 can make mistakes. Check important information before relying on it.</div>
 
 </div>
 </section>
@@ -891,7 +899,7 @@ button{cursor:pointer;color:inherit}
   <div class="settingsGrid">
 
     <div class="settingCard">
-      <h3>Account</h3>
+      <h3>BORTAN Account</h3>
       <p id="accountStatus">You are signed out. Create an account or sign in.</p>
       <input id="accountUsername" autocomplete="username" placeholder="Username (3–30 characters)">
       <input id="accountPassword" type="password" autocomplete="current-password" placeholder="Password (at least 8 characters)">
@@ -899,9 +907,9 @@ button{cursor:pointer;color:inherit}
       <button class="iconBtn" id="accountMode" onclick="toggleAccountMode()">Create account instead</button>
       <button class="iconBtn" id="logoutButton" style="display:none" onclick="logoutAccount()">Sign out</button>
       <hr style="border-color:var(--line);margin:18px 0">
-      <h3>Private Chat History</h3>
-      <button class="iconBtn" onclick="newPrivateChat()">＋ New chat</button>
-      <div id="conversationList" class="libraryList" style="margin-top:12px">Sign in to view your private chats.</div>
+      <h3>Account Chat History</h3>
+      <p>Your saved normal conversations appear in the sidebar.</p>
+      <div id="conversationList" class="libraryList" style="margin-top:12px">Sign in to view saved chats.</div>
     </div>
 
     <div class="settingCard">
@@ -1020,6 +1028,7 @@ function startIntro() {
 /* Always start intro when page loads */
 window.addEventListener("DOMContentLoaded", function() {
     startIntro();
+    checkAccount();
 });
 
 
@@ -1179,22 +1188,90 @@ function animateEnergy(id,score){
 ================================== */
 
 function addMessage(target,text,who){
-
   let el=document.createElement('div');
-
-  el.className='message '+
-    (who==='user'?'userMessage':'bortanMessage');
+  el.className='message '+(who==='user'?'userMessage':'bortanMessage');
 
   if(who==='bot'){
-    el.innerHTML='<b>BORTAN 2 🧠</b><br><br><div class="messageText">'+escapeHTML(text)+'</div>'+
-      '<div class="voiceControls"><button type="button" onclick="speakMessage(this)" title="Read this response aloud">🔊 Listen</button></div>';
-  }else{el.innerHTML=escapeHTML(text);}
+    el.innerHTML=
+      '<b>BORTAN 2 🧠</b><br><br>'+
+      '<div class="messageText">'+escapeHTML(text)+'</div>'+
+      '<div class="voiceControls">'+
+        '<button type="button" onclick="speakMessage(this)" title="Read this response aloud">🔊 Listen</button>'+
+      '</div>'+
+      '<div class="messageActions">'+
+        '<button type="button" onclick="copyMessage(this)" title="Copy response">📋 Copy</button>'+
+        '<button type="button" onclick="shareMessage(this)" title="Share response">↗ Share</button>'+
+      '</div>';
+  }else{
+    el.innerHTML=
+      '<div class="messageText">'+escapeHTML(text)+'</div>'+
+      '<div class="messageActions">'+
+        '<button type="button" onclick="editMessage(this)" title="Edit your message">✏ Edit</button>'+
+      '</div>';
+  }
 
   document.getElementById(target).appendChild(el);
-
   document.getElementById(target).scrollTop=999999;
 }
 
+function getMessageText(button){
+  const message=button.closest('.message');
+  const text=message ? message.querySelector('.messageText') : null;
+  return text ? text.textContent : '';
+}
+
+async function copyMessage(button){
+  const text=getMessageText(button);
+  if(!text)return;
+  try{
+    await navigator.clipboard.writeText(text);
+    const old=button.textContent;
+    button.textContent='✓ Copied';
+    setTimeout(()=>button.textContent=old,1200);
+  }catch(e){
+    alert('Copy is not available in this browser.');
+  }
+}
+
+async function shareMessage(button){
+  const text=getMessageText(button);
+  if(!text)return;
+  if(navigator.share){
+    try{
+      await navigator.share({title:'BORTAN 2',text});
+      return;
+    }catch(e){
+      if(e.name==='AbortError')return;
+    }
+  }
+  try{
+    await navigator.clipboard.writeText(text);
+    alert('Sharing is not available here, so the response was copied to your clipboard.');
+  }catch(e){
+    alert('Sharing is not available in this browser.');
+  }
+}
+
+function editMessage(button){
+  const message=button.closest('.message');
+  const text=message ? getMessageText(button) : '';
+  if(!text)return;
+
+  const input=document.getElementById('chatInput');
+  if(!input)return;
+
+  // Remove this message and everything after it from the current visible chat,
+  // then place the old text back in the composer so the user can start again.
+  let node=message;
+  while(node){
+    const next=node.nextElementSibling;
+    node.remove();
+    node=next;
+  }
+
+  input.value=text;
+  input.focus();
+}
 let currentConversationId=null;
 let privateMode=false;
 let accountMode='login';
@@ -1271,12 +1348,28 @@ async function logoutAccount(){
 }
 
 async function loadConversations(){
-  try{const data=await api('/api/conversations'); const box=document.getElementById('conversationList'); box.replaceChildren();
-    if(!data.conversations.length){box.textContent='No saved chats yet.';return;}
-    data.conversations.forEach(c=>{const row=document.createElement('div');row.style.margin='8px 0';
-      const b=document.createElement('button');b.className='iconBtn';b.textContent=c.title;b.style.maxWidth='100%';b.onclick=()=>openPrivateChat(c.id);row.appendChild(b);
-      const del=document.createElement('button');del.className='iconBtn';del.textContent='🗑';del.title='Delete chat';del.onclick=()=>deletePrivateChat(c.id);row.appendChild(del);box.appendChild(row);});
-  }catch(e){document.getElementById('conversationList').textContent='Sign in to view your private chats.';}
+  const box=document.getElementById('sidebarHistory');
+  const settingsBox=document.getElementById('conversationList');
+  try{
+    const data=await api('/api/conversations');
+    box.replaceChildren(); settingsBox.textContent='Saved chats are shown in the sidebar.';
+    if(!data.conversations.length){box.textContent='No chats yet';return;}
+    data.conversations.forEach(c=>{
+      const row=document.createElement('div');row.style.display='flex';row.style.gap='4px';row.style.margin='5px 0';row.style.alignItems='center';
+      const b=document.createElement('button');b.className='nav';b.title=c.title;b.style.flex='1';b.style.minWidth='0';b.style.overflow='hidden';b.style.textOverflow='ellipsis';b.style.whiteSpace='nowrap';b.innerHTML='<span>💬</span><span class="navText"></span>';b.querySelector('.navText').textContent=c.title;b.onclick=()=>openPrivateChat(c.id);row.appendChild(b);
+      const del=document.createElement('button');del.className='iconBtn';del.textContent='⋯';del.title='Delete chat';del.onclick=()=>deletePrivateChat(c.id);row.appendChild(del);box.appendChild(row);
+    });
+  }catch(e){box.textContent='Sign in to view chats.';settingsBox.textContent='Sign in to view saved chats.';}
+}
+
+async function newNormalChat(){
+  if(privateMode){togglePrivateMode();}
+  currentConversationId=null;
+  const box=document.getElementById('chatMessages');box.replaceChildren();
+  addMessage('chatMessages','New chat. Your messages will be saved after you sign in.','bot');
+  document.getElementById('chatHeading').textContent='BORTAN AI CHAT';
+  document.getElementById('chatModeNote').textContent='ASK • THINK • EXPLORE';
+  openTab('chat',document.querySelector('.sidebar .nav[title="Chat"]'));
 }
 
 async function newPrivateChat(){
