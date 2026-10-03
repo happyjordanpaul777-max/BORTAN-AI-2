@@ -601,6 +601,38 @@ button{cursor:pointer;color:inherit}
   .header{gap:8px}
   .brand h1{letter-spacing:4px}
 }
+
+/* UPGRADE PLANS */
+.upgradeCard{border:1px solid rgba(255,215,0,.28)}
+.upgradeButton{width:100%;margin-top:12px;cursor:pointer}
+.upgradeBack{margin-bottom:18px}
+.upgradeTableWrap{width:100%;overflow-x:auto;border:1px solid rgba(255,255,255,.10);border-radius:16px;background:rgba(255,255,255,.025)}
+.upgradeTable{width:100%;min-width:760px;border-collapse:collapse;text-align:left}
+.upgradeTable th,.upgradeTable td{padding:16px 14px;border-bottom:1px solid rgba(255,255,255,.08);vertical-align:middle}
+.upgradeTable th{font-weight:800;background:rgba(255,255,255,.045)}
+.upgradeTable tr:last-child td{border-bottom:0}
+.upgradeTable .apex{font-weight:800}
+.upgradeTable .price{font-weight:800;font-size:1.02em}
+.upgradeNote{margin-top:16px;opacity:.72;font-size:.9rem;line-height:1.5}
+@media(max-width:700px){.upgradeTable th,.upgradeTable td{padding:12px 10px}}
+
+/* ================================
+   BORTAN 2 MUSIC SYSTEM
+================================ */
+.musicCard{position:relative;overflow:hidden}
+.musicCard::before{content:"";position:absolute;inset:-80px;background:radial-gradient(circle at 20% 30%,rgba(80,180,255,.10),transparent 35%),radial-gradient(circle at 80% 70%,rgba(180,100,255,.08),transparent 35%);pointer-events:none}
+.musicCard > *{position:relative;z-index:1}
+.musicStatus{display:flex;align-items:center;gap:9px;margin:10px 0 14px;font-size:.9rem;opacity:.8}
+.musicDot{width:9px;height:9px;border-radius:50%;background:#777;box-shadow:0 0 0 transparent}
+.musicDot.active{background:#69e6a1;box-shadow:0 0 12px rgba(105,230,161,.8);animation:musicPulse 1.8s infinite}
+@keyframes musicPulse{0%,100%{transform:scale(1);opacity:.7}50%{transform:scale(1.35);opacity:1}}
+.musicControls{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.musicBtn{border:1px solid var(--line);background:#0b2040;color:inherit;border-radius:10px;padding:9px 12px;cursor:pointer;transition:.2s}
+.musicBtn:hover{transform:translateY(-1px);border-color:var(--blue)}
+.musicBtn.active{border-color:var(--blue);box-shadow:0 0 12px rgba(80,150,255,.15)}
+.musicVolume{width:100%;margin-top:12px}
+.musicVolumeRow{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.musicTrackName{margin-top:10px;font-size:.82rem;opacity:.65;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style>
 </head>
 
@@ -929,6 +961,28 @@ button{cursor:pointer;color:inherit}
       </button>
     </div>
 
+    <div class="settingCard upgradeCard">
+      <h3>⚡ Upgrade Plan</h3>
+      <p>Explore XMAX+ and 💎 Infinite ApexLite Core plans.</p>
+      <button class="send upgradeButton" type="button" onclick="openUpgradePage()">⚡ Upgrade Plan</button>
+    </div>
+
+
+
+    <div class="settingCard musicCard">
+      <h3>🎵 BORTAN Ambient Music</h3>
+      <p>Soft original music that begins when you start typing and continues while you use BORTAN 2.</p>
+      <div class="musicStatus"><span id="musicDot" class="musicDot"></span><span id="musicStatusText">Music OFF</span></div>
+      <div class="musicControls">
+        <button id="musicToggleBtn" class="musicBtn" type="button" onclick="toggleBortanMusic()">🔇 Music OFF</button>
+        <button class="musicBtn" type="button" onclick="nextBortanMusic()">⏭ Next</button>
+        <button id="musicShuffleBtn" class="musicBtn active" type="button" onclick="toggleBortanShuffle()">🎲 Random</button>
+      </div>
+      <div class="musicVolumeRow"><span>🔊 Volume</span><span id="musicVolumeText">35%</span></div>
+      <input id="musicVolume" class="musicVolume" type="range" min="0" max="1" step="0.01" value="0.35" oninput="setBortanMusicVolume(this.value)">
+      <div id="musicTrackName" class="musicTrackName">No track playing</div>
+    </div>
+
     <div class="settingCard">
       <h3>Voice</h3>
       <p>Use browser speech synthesis to read a demo response aloud. Voice recognition depends on your browser.</p>
@@ -946,6 +1000,26 @@ button{cursor:pointer;color:inherit}
 
 </div>
 </section>
+
+<section id="upgrade" class="tab">
+  <div class="panel">
+    <div class="title"><h2>⚡ UPGRADE PLAN</h2><p>CHOOSE YOUR BORTAN 2 PLAN</p></div>
+    <button class="iconBtn upgradeBack" type="button" onclick="openTab('settings', document.querySelector('.sidebar .nav.bottom'))">← Back to Settings</button>
+    <div class="upgradeTableWrap"><table class="upgradeTable">
+      <thead><tr><th>Feature / Plan</th><th>🆓 Free</th><th>⚡ XMAX+</th><th>💎 Infinite ApexLite Core</th></tr></thead>
+      <tbody>
+        <tr><td>Price</td><td class="price">₹0</td><td class="price">₹49 / ₹129 / ₹399 / ₹799</td><td class="price apex">₹2,578 Lifetime</td></tr>
+        <tr><td>Duration</td><td>Unlimited</td><td>1 month / 3 months / 1 year / Lifetime</td><td class="apex">Lifetime</td></tr>
+        <tr><td>1. Advanced Intelligence</td><td>❌</td><td>✅</td><td class="apex">✅ Enhanced</td></tr>
+        <tr><td>2. Usage Limit</td><td>Limited</td><td>Expanded</td><td class="apex">Very High</td></tr>
+        <tr><td>3. Customization</td><td>Basic</td><td>Advanced</td><td class="apex">Advanced+</td></tr>
+        <tr><td>4. Premium Tools</td><td>❌</td><td>✅</td><td class="apex">✅ Exclusive</td></tr>
+        <tr><td>5. Early Access</td><td>❌</td><td>✅</td><td class="apex">✅ Priority Access</td></tr>
+      </tbody></table></div>
+    <p class="upgradeNote">Plans and payment are currently interface-only. No payment system is connected yet.</p>
+  </div>
+</section>
+
 
 </main>
 </div>
@@ -1610,6 +1684,87 @@ function startVoice(id){
 
   rec.start();
 }
+
+
+function openUpgradePage(){
+  openTab('upgrade', null);
+  document.querySelectorAll('.sidebar .nav').forEach(x=>x.classList.remove('active'));
+  const upgrade=document.getElementById('upgrade');
+  if(upgrade) upgrade.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* =========================================================
+   BORTAN 2 CONTINUOUS MUSIC SYSTEM
+========================================================= */
+const BORTAN_MUSIC_TRACKS=["/static/music/song1.m4a","/static/music/song2.m4a","/static/music/song3.m4a"];
+let bortanMusic=new Audio();
+let bortanMusicIndex=-1;
+let bortanMusicEnabled=localStorage.getItem("bortanMusicEnabled")!=="false";
+let bortanMusicShuffle=localStorage.getItem("bortanMusicShuffle")!=="false";
+let bortanMusicVolume=parseFloat(localStorage.getItem("bortanMusicVolume")||"0.35");
+bortanMusic.volume=bortanMusicVolume;
+bortanMusic.preload="auto";
+bortanMusic.addEventListener("ended",()=>playNextBortanMusic());
+function getNextBortanMusicIndex(){
+  if(!BORTAN_MUSIC_TRACKS.length)return -1;
+  if(BORTAN_MUSIC_TRACKS.length===1)return 0;
+  if(bortanMusicShuffle){let n;do{n=Math.floor(Math.random()*BORTAN_MUSIC_TRACKS.length)}while(n===bortanMusicIndex);return n;}
+  return (bortanMusicIndex+1)%BORTAN_MUSIC_TRACKS.length;
+}
+function playBortanMusic(index){
+  if(!bortanMusicEnabled||index<0||index>=BORTAN_MUSIC_TRACKS.length)return;
+  bortanMusicIndex=index;
+  bortanMusic.src=BORTAN_MUSIC_TRACKS[index];
+  bortanMusic.volume=bortanMusicVolume;
+  bortanMusic.load();
+  const promise=bortanMusic.play();
+  if(promise!==undefined){promise.then(()=>{updateBortanMusicUI();}).catch(err=>{console.log("BORTAN music playback waiting for user interaction:",err);updateBortanMusicUI();});}
+}
+function startBortanMusic(){
+  if(!bortanMusicEnabled)return;
+  if(!bortanMusic.paused)return;
+  if(bortanMusicIndex===-1){playBortanMusic(getNextBortanMusicIndex());return;}
+  const promise=bortanMusic.play();
+  if(promise!==undefined)promise.then(updateBortanMusicUI).catch(()=>{});
+}
+function playNextBortanMusic(){if(bortanMusicEnabled)playBortanMusic(getNextBortanMusicIndex());}
+function nextBortanMusic(){bortanMusicEnabled=true;localStorage.setItem("bortanMusicEnabled","true");playNextBortanMusic();updateBortanMusicUI();}
+function toggleBortanMusic(){
+  bortanMusicEnabled=!bortanMusicEnabled;
+  localStorage.setItem("bortanMusicEnabled",bortanMusicEnabled);
+  if(bortanMusicEnabled)startBortanMusic();else{bortanMusic.pause();updateBortanMusicUI();}
+}
+function setBortanMusicVolume(value){
+  bortanMusicVolume=parseFloat(value);
+  bortanMusic.volume=bortanMusicVolume;
+  localStorage.setItem("bortanMusicVolume",bortanMusicVolume);
+  const label=document.getElementById("musicVolumeText");
+  if(label)label.textContent=Math.round(bortanMusicVolume*100)+"%";
+}
+function toggleBortanShuffle(){
+  bortanMusicShuffle=!bortanMusicShuffle;
+  localStorage.setItem("bortanMusicShuffle",bortanMusicShuffle);
+  updateBortanMusicUI();
+}
+function updateBortanMusicUI(){
+  const button=document.getElementById("musicToggleBtn"),status=document.getElementById("musicStatusText"),dot=document.getElementById("musicDot"),shuffle=document.getElementById("musicShuffleBtn"),track=document.getElementById("musicTrackName");
+  if(button)button.textContent=bortanMusicEnabled?"🔊 Music ON":"🔇 Music OFF";
+  if(status)status.textContent=bortanMusicEnabled?(!bortanMusic.paused?"Music playing":"Music ready"):"Music OFF";
+  if(dot)dot.classList.toggle("active",bortanMusicEnabled&&!bortanMusic.paused);
+  if(shuffle){shuffle.textContent=bortanMusicShuffle?"🎲 Random":"🔢 Sequential";shuffle.classList.toggle("active",bortanMusicShuffle);}
+  if(track)track.textContent=bortanMusicIndex>=0?"♪ "+BORTAN_MUSIC_TRACKS[bortanMusicIndex].split("/").pop():"No track playing";
+}
+const bortanChatInput=document.getElementById("chatInput");
+if(bortanChatInput){
+  bortanChatInput.addEventListener("keydown",event=>{if(event.key.length===1||event.key==="Backspace"||event.key==="Enter")startBortanMusic();});
+  bortanChatInput.addEventListener("input",()=>startBortanMusic());
+}
+document.addEventListener("DOMContentLoaded",()=>{
+  const volume=document.getElementById("musicVolume");
+  if(volume)volume.value=bortanMusicVolume;
+  setBortanMusicVolume(bortanMusicVolume);
+  updateBortanMusicUI();
+});
 
 </script>
 
