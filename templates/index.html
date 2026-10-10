@@ -18,6 +18,9 @@
 
 *{box-sizing:border-box}
 
+
+@keyframes bortanWaveTravel{from{stroke-dashoffset:0}to{stroke-dashoffset:-220}}
+
 body{
   margin:0;
   background:radial-gradient(ellipse at 50% 20%,#15396b 0%,#091c3b 45%,#041027 100%);
@@ -385,21 +388,24 @@ button{cursor:pointer;color:inherit}
   margin:12px 5px;
 }
 
-/* VIRTUAL BRAIN */
-
+/* VIRTUAL BRAIN — BORTAN 2 VISUAL BRAIN */
 .brainArea{
   height:390px;
   position:relative;
   overflow:hidden;
   isolation:isolate;
+  --brain-color:#ffffff;
+  --brain-glow:#ffffff;
 }
 
 .brainGlow{
   position:absolute;
   inset:0;
-  background:radial-gradient(ellipse at center,var(--brain) 0%,transparent 58%);
-  opacity:.13;
+  background:radial-gradient(ellipse at center,var(--brain-color) 0%,transparent 58%);
+  opacity:.10;
   filter:blur(35px);
+  transition:background 4s ease, opacity 4s ease;
+  pointer-events:none;
 }
 
 .waveSvg{
@@ -412,13 +418,20 @@ button{cursor:pointer;color:inherit}
 
 .wavePath{
   fill:none;
-  stroke:var(--brain);
+  stroke:#fff;
   stroke-width:5;
   stroke-linecap:round;
-  filter:drop-shadow(0 0 6px var(--brain))
-         drop-shadow(0 0 20px var(--brain));
-  opacity:.9;
-  transition:stroke .6s,filter .6s;
+  vector-effect:non-scaling-stroke;
+  opacity:.95;
+  filter:drop-shadow(0 0 6px #fff) drop-shadow(0 0 20px var(--brain-color));
+  transition:stroke 4s ease,filter 4s ease,opacity 2.2s ease;
+}
+
+/* Wave 1 is the initial white wave. Wave 2 is the slowly growing wave. */
+#brainWave2,#liveWave2{
+  opacity:.95;
+  stroke:#fff;
+  stroke-dasharray:none;
 }
 
 .core{
@@ -433,46 +446,18 @@ button{cursor:pointer;color:inherit}
   place-items:center;
   text-align:center;
   z-index:4;
-  background:radial-gradient(
-    circle at 30% 25%,
-    #e3fbff,
-    #64c9ff 28%,
-    #3e5bd9 65%,
-    #191e68
-  );
+  background:radial-gradient(circle at 30% 25%,#e3fbff,#64c9ff 28%,#3e5bd9 65%,#191e68);
   border:2px solid #d8f8ff;
-  box-shadow:0 0 22px var(--brain),
-             0 0 65px var(--brain),
-             inset 0 0 25px #fff8;
-  animation:pulse 3s ease-in-out infinite alternate;
+  box-shadow:0 0 22px var(--brain-color),0 0 65px var(--brain-color),inset 0 0 25px #fff8;
+  transition:width 7s ease,height 7s ease,box-shadow 4s ease;
 }
 
-.core b{
-  font-size:17px;
-  letter-spacing:2px;
-  text-shadow:0 2px 10px #001;
-}
-
-.core small{
-  display:block;
-  font-size:10px;
-  letter-spacing:4px;
-  margin-top:6px;
-}
-
-@keyframes pulse{
-  to{
-    box-shadow:0 0 35px var(--brain),
-               0 0 90px var(--brain),
-               inset 0 0 35px #fff9;
-    scale:1.04;
-  }
-}
+.core b{font-size:15px;letter-spacing:1.8px;text-shadow:0 2px 10px #001}
+.core small{display:block;font-size:10px;letter-spacing:3px;margin-top:6px}
 
 .energy{
   fill:#fff;
-  filter:drop-shadow(0 0 8px white)
-         drop-shadow(0 0 18px var(--brain));
+  filter:drop-shadow(0 0 8px white) drop-shadow(0 0 18px var(--brain-color));
 }
 
 .stats{
@@ -769,20 +754,24 @@ button{cursor:pointer;color:inherit}
   <div class="brainArea">
     <div class="brainGlow"></div>
 
-    <svg class="waveSvg" viewBox="0 0 1000 400" preserveAspectRatio="none">
-      <path id="brainWave1" class="wavePath"
-        d="M0 200 C90 200 90 80 180 100 S270 320 360 200 S450 80 500 200 S590 320 680 200 S770 80 860 100 S930 200 1000 200"></path>
-
-      <path id="brainWave2" class="wavePath"
-        d="M0 200 C90 200 90 320 180 300 S270 80 360 200 S450 320 500 200 S590 80 680 200 S770 320 860 300 S930 200 1000 200"></path>
-
-      <circle id="brainEnergy" class="energy" r="8" cx="0" cy="200"></circle>
+    <svg class="waveSvg" viewBox="0 0 1400 400" preserveAspectRatio="none">
+      <!-- BORTAN 2 keeps the original BORTAN 1 ten-wave brain structure.
+           These are structural waves only; no question-type mapping is used. -->
+      <path id="brainWave1" class="wavePath" d="M0 220 C40 220 60 270 110 250"></path>
+      <path id="brainWave2" class="wavePath" d="M110 250 C160 230 150 150 210 150 C260 150 250 290 310 290"></path>
+      <path id="brainWave3" class="wavePath" d="M310 290 C370 290 350 105 425 105"></path>
+      <path id="brainWave4" class="wavePath" d="M425 105 C490 105 475 305 545 305"></path>
+      <path id="brainWave5" class="wavePath" d="M545 305 C590 305 600 220 700 220"></path>
+      <path id="brainWave6" class="wavePath" d="M700 220 C800 220 810 305 855 305"></path>
+      <path id="brainWave7" class="wavePath" d="M855 305 C925 305 910 105 975 105"></path>
+      <path id="brainWave8" class="wavePath" d="M975 105 C1050 105 1030 290 1090 290"></path>
+      <path id="brainWave9" class="wavePath" d="M1090 290 C1150 290 1140 150 1190 150 C1250 150 1240 230 1290 250"></path>
+      <path id="brainWave10" class="wavePath" d="M1290 250 C1340 270 1360 220 1400 220"></path>
     </svg>
 
     <div class="core">
       <div>
-        <b>BORTAN</b>
-        <small>CORE</small>
+        <b>B2RTAN CORE</b>
       </div>
     </div>
   </div>
@@ -844,20 +833,22 @@ button{cursor:pointer;color:inherit}
   <div class="brainArea">
     <div class="brainGlow"></div>
 
-    <svg class="waveSvg" viewBox="0 0 1000 400" preserveAspectRatio="none">
-      <path class="wavePath"
-        d="M0 200 C90 200 90 80 180 100 S270 320 360 200 S450 80 500 200 S590 320 680 200 S770 80 860 100 S930 200 1000 200"></path>
-
-      <path class="wavePath"
-        d="M0 200 C90 200 90 320 180 300 S270 80 360 200 S450 320 500 200 S590 80 680 200 S770 320 860 300 S930 200 1000 200"></path>
-
-      <circle id="liveEnergy" class="energy" r="8" cx="0" cy="200"></circle>
+    <svg class="waveSvg" viewBox="0 0 1400 400" preserveAspectRatio="none">
+      <path id="liveWave1" class="wavePath" d="M0 220 C40 220 60 270 110 250"></path>
+      <path id="liveWave2" class="wavePath" d="M110 250 C160 230 150 150 210 150 C260 150 250 290 310 290"></path>
+      <path id="liveWave3" class="wavePath" d="M310 290 C370 290 350 105 425 105"></path>
+      <path id="liveWave4" class="wavePath" d="M425 105 C490 105 475 305 545 305"></path>
+      <path id="liveWave5" class="wavePath" d="M545 305 C590 305 600 220 700 220"></path>
+      <path id="liveWave6" class="wavePath" d="M700 220 C800 220 810 305 855 305"></path>
+      <path id="liveWave7" class="wavePath" d="M855 305 C925 305 910 105 975 105"></path>
+      <path id="liveWave8" class="wavePath" d="M975 105 C1050 105 1030 290 1090 290"></path>
+      <path id="liveWave9" class="wavePath" d="M1090 290 C1150 290 1140 150 1190 150 C1250 150 1240 230 1290 250"></path>
+      <path id="liveWave10" class="wavePath" d="M1290 250 C1340 270 1360 220 1400 220"></path>
     </svg>
 
     <div class="core">
       <div>
-        <b>BORTAN</b>
-        <small>CORE</small>
+        <b>B2RTAN CORE</b>
       </div>
     </div>
   </div>
@@ -1103,6 +1094,7 @@ function startIntro() {
 window.addEventListener("DOMContentLoaded", function() {
     startIntro();
     checkAccount();
+    resetVisualBrain(document.querySelector('#brain .brainArea'));
 });
 
 
@@ -1142,124 +1134,175 @@ function escapeHTML(s){
 
 
 /* ==================================
-   DIFFICULTY ESTIMATION
+   BORTAN 2 VISUAL BRAIN
+   BORTAN 1 contributes the real SVG-path processing concept.
+   BORTAN 2 keeps its own interface and the new two-wave behavior.
+   No question-type -> wave mapping. No moving white ball.
 ================================== */
+const BRAIN_LEVELS=[
+  {name:'Very Easy',color:'#b8f28a'},
+  {name:'Easy',color:'#39d353'},
+  {name:'Easy+',color:'#b7f000'},
+  {name:'Normal',color:'#ffe44d'},
+  {name:'Normal+',color:'#ffad33'},
+  {name:'Moderate',color:'#ff6842'},
+  {name:'Hard',color:'#ff3b30'},
+  {name:'Very Hard',color:'#9b59ff'},
+  {name:'Extreme',color:'#4b3cff'},
+  {name:'Insane',color:'#2f7cff'},
+  {name:'Impossible',color:'rainbow'},
+  {name:'Ultimate',color:'full-rainbow'}
+];
 
-function estimateDifficulty(q){
+const SECOND_WAVE_GROWTH_PER_QUESTION=.02;
+const CORE_SHRINK_MS=7000;
+let visualBrainQuestions=0;
+let visualBrainGrowth=0;
+let visualBrainLevel=0;
+let brainGrowthAnimation=null;
+let brainWaveRunning=false;
+let liveBrainQuestions=0;
+let liveBrainGrowth=0;
+let liveBrainLevel=0;
 
-  let words=q.trim().split(/\s+/).length;
+function brainGradient(id,full){
+  const svg=document.querySelector('#brain .waveSvg');
+  if(!svg)return;
+  let defs=svg.querySelector('defs');
+  if(!defs){defs=document.createElementNS('http://www.w3.org/2000/svg','defs');svg.prepend(defs);}
+  if(svg.querySelector('#'+id))return;
+  const g=document.createElementNS('http://www.w3.org/2000/svg','linearGradient');
+  g.id=id;g.setAttribute('x1','0%');g.setAttribute('x2','100%');
+  const colors=full?['#ff0000','#ff8c00','#fff000','#32cd32','#00bfff','#3f00ff','#8b00ff','#ff1493','#ff0000']:['#ff0000','#ff8c00','#fff000','#32cd32','#00bfff','#3f00ff','#8b00ff'];
+  colors.forEach((c,i)=>{const st=document.createElementNS('http://www.w3.org/2000/svg','stop');st.setAttribute('offset',(i/(colors.length-1)*100)+'%');st.setAttribute('stop-color',c);g.appendChild(st);});
+  defs.appendChild(g);
+}
 
+function applyBrainColor(level){
+  const root=document.querySelector('#brain .brainArea');
+  if(!root)return;
+  const item=BRAIN_LEVELS[Math.max(0,Math.min(11,level))];
+  let stroke=item.color;
+  if(item.color==='rainbow'){brainGradient('brainRainbowGradient',false);stroke='url(#brainRainbowGradient)';}
+  if(item.color==='full-rainbow'){brainGradient('brainFullRainbowGradient',true);stroke='url(#brainFullRainbowGradient)';}
+  for(let i=1;i<=10;i++){
+    const w=document.getElementById('brainWave'+i);
+    if(w)w.style.stroke=stroke;
+  }
+  root.style.setProperty('--brain-color',item.color.includes('rainbow')?'#8b7bff':item.color);
+  root.dataset.difficulty=item.name;
+}
+
+function estimateBrainScore(q){
+  let words=q.trim().split(/\s+/).filter(Boolean).length;
   let score=Math.min(100,Math.max(10,words*2));
-
-  const signals=[
-    'why','explain','compare','calculate','prove',
-    'analyze','analyse','algorithm','derive',
-    'evaluate','design','program','code',
-    'step by step','complex','difference'
-  ];
-
-  signals.forEach(w=>{
-    if(q.toLowerCase().includes(w)){
-      score+=8;
-    }
-  });
-
+  const signals=['why','explain','compare','calculate','prove','analyze','analyse','algorithm','derive','evaluate','design','program','code','step by step','complex','difference'];
+  signals.forEach(w=>{if(q.toLowerCase().includes(w))score+=8;});
   if(/[=+\-*/^]/.test(q))score+=12;
   if(q.includes('?'))score+=3;
-
-  score=Math.min(100,score);
-
-  let level=
-    score<20?'Easiest':
-    score<30?'Easy':
-    score<40?'Easier':
-    score<50?'Moderate':
-    score<60?'Mild':
-    score<70?'Hard':
-    score<80?'Difficult':
-    score<90?'Complex':
-    'Arduous';
-
-  return{score,level};
+  return Math.min(100,score);
 }
 
-
-/* ==================================
-   BRAIN VISUALIZATION
-================================== */
-
-function setBrain(q){
-
-  const d=estimateDifficulty(q);
-
-  lastDifficulty=d.score;
-
-  const hue=205+d.score*1.35;
-
-  document.documentElement.style.setProperty(
-    '--brain',
-    d.score>88
-      ?'#f2baff'
-      :`hsl(${hue},95%,${68-d.score*.12}%)`
-  );
-
-  ['understanding','reasoning','knowledge','answer']
-    .forEach((n,i)=>{
-
-      let v=[
-        90,
-        Math.min(98,60+d.score*.4),
-        Math.min(99,55+d.score*.45),
-        Math.min(100,40+d.score*.6)
-      ][i];
-
-      document.getElementById(n+'Pct').textContent=
-        Math.round(v)+'%';
-
-      document.getElementById(n+'Bar').style.width=v+'%';
-    });
-
-  document.getElementById('brainStatus').innerHTML=
-    '<strong>QUESTION ANALYSED</strong><br>'+
-    'Estimated level: <strong>'+d.level+'</strong>'+
-    ' • Intensity: '+d.score+'%<br>'+
-    'Local heuristic only—not a trained difficulty detector.';
-
-  animateEnergy('brainEnergy',d.score);
-  animateEnergy('liveEnergy',d.score);
-
-  return d;
-}
-
-function animateEnergy(id,score){
-
-  let el=document.getElementById(id);
-
-  if(!el)return;
-
-  el.animate([
-    {
-      transform:'translate(0,0)',
-      opacity:1
-    },
-    {
-      transform:`translate(${Math.min(90,score)*7}px,${Math.sin(score)*70}px)`,
-      opacity:.35
-    },
-    {
-      transform:`translate(${score*9}px,0)`,
-      opacity:1
-    }
-  ],{
-    duration:1800,
-    iterations:1
+function updateBrainBars(score){
+  const vals=[Math.min(100,88+score*.08),Math.min(100,55+score*.42),Math.min(100,50+score*.45),Math.min(100,38+score*.60)];
+  ['understanding','reasoning','knowledge','answer'].forEach((n,i)=>{
+    const p=document.getElementById(n+'Pct'),b=document.getElementById(n+'Bar');
+    if(p)p.textContent=Math.round(vals[i])+'%';
+    if(b)b.style.width=vals[i]+'%';
   });
 }
 
+function resetVisualBrain(root){
+  if(!root)return;
+  cancelAnimationFrame(brainGrowthAnimation);
+  visualBrainQuestions=0;visualBrainGrowth=0;visualBrainLevel=0;brainWaveRunning=false;
+  root.classList.remove('processing','brainComplete');
+  for(let i=1;i<=10;i++){
+    const w=root.querySelector('#brainWave'+i);
+    if(w){w.style.stroke='#fff';w.style.opacity='.95';w.style.strokeDasharray='none';w.style.strokeDashoffset='0';}
+  }
+  const second=root.querySelector('#brainWave2');
+  const core=root.querySelector('.core');
+  if(second){second.style.opacity='.95';second.style.strokeDasharray='none';second.style.strokeDashoffset='0';}
+  if(core){core.style.width='142px';core.style.height='142px';core.style.transform='translate(-50%,-50%)';delete core.dataset.shrunk;}
+  root.style.setProperty('--brain-color','#fff');
+  const status=root.closest('.panel')?.querySelector('.status');
+  if(status)status.innerHTML='<strong>READY</strong><br>Waiting for your question.';
+}
 
-/* ==================================
-   CHAT
-================================== */
+function startFirstWave(root){
+  if(brainWaveRunning)return;
+  brainWaveRunning=true;
+  root.classList.add('processing');
+}
+
+function animateSecondWave(root,target){
+  const second=root.querySelector('#brainWave2');
+  if(!second)return;
+  const length=second.getTotalLength();
+  const from=visualBrainGrowth*length;
+  const to=target*length;
+  const start=performance.now();
+  const duration=2600;
+  cancelAnimationFrame(brainGrowthAnimation);
+  function frame(now){
+    const p=Math.min(1,(now-start)/duration);
+    const eased=p*p*(3-2*p);
+    const visible=from+(to-from)*eased;
+    second.style.strokeDasharray=visible+' '+length;
+    second.style.strokeDashoffset='0';
+    second.style.opacity=visible>0?'.95':'0';
+    if(p<1){brainGrowthAnimation=requestAnimationFrame(frame);}else{visualBrainGrowth=target;completeIfNeeded(root);updateBrainStatus(root);}
+  }
+  brainGrowthAnimation=requestAnimationFrame(frame);
+}
+
+function completeIfNeeded(root){
+  if(visualBrainGrowth<1)return;
+  root.classList.add('brainComplete');
+  const core=root.querySelector('.core');
+  if(core && !core.dataset.shrunk){
+    core.dataset.shrunk='1';
+    core.animate([
+      {transform:'translate(-50%,-50%) scale(1)'},
+      {transform:'translate(-50%,-50%) scale(.62)'}
+    ],{duration:CORE_SHRINK_MS,easing:'ease-in-out',fill:'forwards'});
+  }
+}
+
+function updateBrainStatus(root){
+  const status=root.closest('.panel')?.querySelector('.status');
+  if(!status)return;
+  const item=BRAIN_LEVELS[visualBrainLevel];
+  status.innerHTML='<strong>PROCESSING</strong><br>10-wave brain active • Questions processed: <strong>'+visualBrainQuestions+'</strong> • Wave 2 growth: <strong>'+Math.round(visualBrainGrowth*100)+'%</strong><br>Difficulty colour: <strong>'+item.name+'</strong> • No question-to-wave mapping.';
+}
+
+function setBrain(q){
+  q=String(q||'').trim();
+  if(!q)return {level:'Very Easy',score:0};
+  const root=document.querySelector('#brain .brainArea');
+  if(!root)return {level:'Very Easy',score:0};
+
+  const score=estimateBrainScore(q);
+  // Difficulty determines colour only. It never chooses one of the 10 waves.
+  visualBrainLevel=Math.min(11,Math.max(0,Math.floor(score/100*12)));
+  visualBrainQuestions++;
+  const target=Math.min(1,visualBrainGrowth+SECOND_WAVE_GROWTH_PER_QUESTION);
+
+  startFirstWave(root);
+  applyBrainColor(visualBrainLevel);
+  animateSecondWave(root,target);
+  updateBrainBars(score);
+  updateBrainStatus(root);
+  return {level:BRAIN_LEVELS[visualBrainLevel].name,score};
+}
+
+function setLiveBrain(question){
+  const root=document.querySelector('#live .brainArea');
+  if(root){ root.classList.add('processing'); for(let i=1;i<=10;i++){ const w=root.querySelector('#liveWave'+i); if(w) w.style.opacity='.95'; } }
+  return {level:'Live',score:0};
+}
+
 
 function addMessage(target,text,who){
   let el=document.createElement('div');
@@ -1474,7 +1517,7 @@ async function ask(question,target){
 
   if(!question)return;
 
-  let d=setBrain(question);
+  let d=target==='liveMessages' ? setLiveBrain(question) : setBrain(question);
 
   addMessage(target,question,'user');
 
@@ -1487,8 +1530,8 @@ async function ask(question,target){
 
   let answer=
     'This is the BORTAN 2 interface demo. '+
-    'Your question was estimated as '+d.level+
-    ' difficulty ('+d.score+'%). '+
+    'Visual brain level: '+d.level+'. '+
+    'Second wave growth: '+d.score+'%. '+
     'The actual AI model is not connected yet. '+
     'Next we will connect the backend and your own model.';
 
@@ -1523,8 +1566,7 @@ async function ask(question,target){
 
     document.getElementById('liveStatus').innerHTML=
       '<strong>LIVE RESPONSE COMPLETE</strong><br>'+
-      'Estimated difficulty: '+d.level+
-      ' ('+d.score+'%)';
+      'Visual brain level: '+d.level+' • Second wave growth: '+d.score+'%';
   }
 
   // Voice playback is user-triggered; do not automatically read answers aloud.
@@ -1756,7 +1798,7 @@ function updateBortanMusicUI(){
 }
 const bortanChatInput=document.getElementById("chatInput");
 if(bortanChatInput){
-  bortanChatInput.addEventListener("keydown",event=>{if(event.key.length===1||event.key==="Backspace"||event.key==="Enter")startBortanMusic();});
+  bortanChatInput.addEventListener("keydown",event=>{if(event.key.length===1)startBortanMusic();});
   bortanChatInput.addEventListener("input",()=>startBortanMusic());
 }
 document.addEventListener("DOMContentLoaded",()=>{
